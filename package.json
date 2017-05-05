@@ -1,0 +1,53 @@
+{
+  "name": "util.log",
+  "version": "0.0.0",
+  "author": "jmquigley <jmquigley@outlook.com>",
+  "description": "A simple logging utility module",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jmquigley/util.log"
+  },
+  "bugs": {
+    "url": "https://github.com/jmquigley/util.log/issues"
+  },
+  "engines": {
+    "node": ">=7.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "util.rstrip": "0.0.17",
+    "uuid": "^3.0.1",
+    "yargs": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "2.1.0",
+    "@types/lodash": "^4.14.63",
+    "@types/node": "^7.0.13",
+    "@types/uuid": "^2.0.29",
+    "@types/yargs": "^6.6.0",
+    "ava": "^0.19.1",
+    "coveralls": "^2.13.0",
+    "fs-extra": "^2.1.2",
+    "nyc": "^10.2.0",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2",
+    "util.fixture": "0.0.50",
+    "util.pkgwrap": "0.0.26"
+  },
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "bin": {
+    "logwatch": "./cli.js"
+  },
+  "scripts": {
+    "all": "npm install && npm run lint && npm run build && npm test && npm run report",
+    "build": "./node_modules/.bin/pkgwrap --build",
+    "coverage": "./node_modules/.bin/pkgwrap --coverage",
+    "lint": "./node_modules/.bin/pkgwrap --lint",
+    "postinstall": "./node_modules/.bin/pkgwrap --postinstall",
+    "report": "./node_modules/.bin/pkgwrap --reporting",
+    "test": "./node_modules/.bin/pkgwrap --testing --ava"
+  }
+}
