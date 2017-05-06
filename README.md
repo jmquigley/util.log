@@ -17,4 +17,21 @@ $ npm run all
 
 ## Usage
 
-This is an inital experimental version with no code, just support boilerplate.
+```javascript
+const log = require('util.log');
+log.info('This is a log message');
+```
+
+This uses the default options and logs an info level message to a file.  The message will be written to `./logs/messages.log`.  It will not write the message to `console.log` by default.
+
+
+## Configuration
+The module is configured with a call to the `.config()`.  It accepts an object with the following parameters:
+
+- `messages` - the output file name for all `info|warning|error` messages.  The default is `messages.log`.
+- `events` - the output file name for all `event` messages.  Any message sent to `log.event()` will be placed in this log file.
+- `directory` - the directory location for the messages and event log files.  The default is the current directory with `logs` appended to it.
+- `toConsole` - a boolean flag.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `false`.
+- `enabled` - a boolean flag.  If true, then the logger will produce messages, otherwise all messages are suppressed and no output is generated.  The default is `true`.
+  
+
