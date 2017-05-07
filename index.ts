@@ -113,9 +113,8 @@ function message(str: string, level: Level): string {
 
 	if (level === Level.EVENT) {
 		fs.appendFileSync(events as any, msg + '\n');
-	} else {
-		fs.appendFileSync(messages as any, msg + '\n');
 	}
+	fs.appendFileSync(messages as any, msg + '\n');
 
 	if (opts.toConsole) {
 		if (level === Level.ERROR) {
