@@ -31,7 +31,7 @@ log.configure({
 	toConsole: true
 });
 
-log.info('This is a log message);
+log.info('This is a log message');
 
 ```
 Similar to the first example.  This overrides the default configuration and changes the directory where the log files will be written.  It also turns on console logging.
