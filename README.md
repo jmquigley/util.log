@@ -25,7 +25,7 @@ log.info('This is a log message');
 This uses the default options and logs an info level message to a file.  The message will be written to `./logs/messages.log`.  It will not write the message to `console.log` by default.
 
 ```javascript
-const log = require('util.log`);
+const log = require('util.log');
 log.configure({
     directory: /var/log/app,
 	toConsole: true
