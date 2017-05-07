@@ -4,22 +4,33 @@ import * as fs from 'fs-extra';
 import {join} from 'util.join';
 import {timestamp as ts} from 'util.timestamp';
 
-export interface LoggingConfig {
-	messages: string;
-	events: string;
-	directory: string;
-	toConsole: boolean;
-	enabled: boolean;
-	dateFormat: string;
+const chalk = require('chalk');
+
+enum Level {
+	INFO,
+	WARN,
+	ERROR,
+	EVENT
 }
 
-let opts: LoggingConfig = {
-	messages: 'messages.log',
-	events: 'events.log',
-	directory: './logs',
-	toConsole: true,
-	enabled: true,
+export interface ILoggingConfig {
+	colors?: boolean;
+	dateFormat?: string;
+	directory?: string;
+	enabled?: boolean;
+	events?: string;
+	messages?: string;
+	toConsole?: boolean;
+}
+
+let opts: ILoggingConfig = {
+	colors: true,
 	dateFormat: '%Y-%m-%d @ %H:%M:%S:%L',
+	directory: './logs',
+	enabled: true,
+	events: 'events.log',
+	messages: 'messages.log',
+	toConsole: false
 };
 
 let messages: number = null;
@@ -28,16 +39,20 @@ let configured: boolean = false;
 
 /**
  * Allows the user to override the default configuration for the simple logger.
- * See the LoggingConfig interface for valid options.
- * @param cfg {LoggingConfig} optional arguments to override the default logger
+ * See the ILoggingConfig interface for valid options.
+ * @param cfg {ILoggingConfig} optional argumets to override the default logger
  */
-export function config(cfg?: LoggingConfig) {
+export function configure(cfg?: ILoggingConfig) {
 	opts = Object.assign(opts, cfg);
+
+	if (opts.colors) {
+		chalk.enabled = true;
+	}
 
 	if (!fs.existsSync(opts.directory)) {
 		fs.mkdirSync(opts.directory);
 	}
-	
+
 	if (messages != null) {
 		fs.close(messages);
 	}
@@ -47,7 +62,7 @@ export function config(cfg?: LoggingConfig) {
 		fs.close(events);
 	}
 	events = fs.openSync(join(opts.directory, opts.events), 'a');
-	
+
 	configured = true;
 }
 
@@ -60,29 +75,50 @@ export function config(cfg?: LoggingConfig) {
  * This function checks to see if the enviornment has been configured.  If it has
  * not, then it uses the default options.
  * @param str {string} the string passed to output functions.
- * @param level {string} the logging level requested.
+ * @param level {Levels} the logging level requested.
  * @returns {str} the message that was written/displayed
  */
-function message(str: string, level: string): string {
+function message(str: string, level: Level): string {
 
 	if (!opts.enabled) {
 		return '';
 	}
 
 	if (!configured) {
-		config();
+		configure();
 	}
-	
-	let msg = `[${level.toUpperCase()}] ${ts({dateFormat: opts.dateFormat})} ~> ${str}`;
 
-	if (level === 'EVENT') {
+	let	levelStr = String(level);
+	if (opts.colors) {
+		switch (level) {
+		case Level.INFO:
+			levelStr = chalk.green('INFO ');
+			break;
+
+		case Level.WARN:
+			levelStr = chalk.yellow('WARN ');
+			break;
+
+		case Level.ERROR:
+			levelStr = chalk.red('ERROR');
+			break;
+
+		case Level.EVENT:
+			levelStr = chalk.blue('EVENT');
+			break;
+		}
+	}
+
+	const msg = `[${levelStr}] ${ts({dateFormat: opts.dateFormat})} ~> ${str}`;
+
+	if (level === Level.EVENT) {
 		fs.appendFileSync(events as any, msg + '\n');
 	} else {
 		fs.appendFileSync(messages as any, msg + '\n');
 	}
 
 	if (opts.toConsole) {
-		if (level === 'ERROR') {
+		if (level === Level.ERROR) {
 			console.error(msg);
 		} else {
 			console.log(msg);
@@ -93,17 +129,25 @@ function message(str: string, level: string): string {
 }
 
 export function info(str: string): string {
-	return message(str, 'INFO ');
+	return message(str, Level.INFO);
 }
 
 export function warning(str: string): string {
-	return message(str, 'WARN ');
+	return message(str, Level.WARN);
+}
+
+export function warn(str: string): string {
+	return warning(str);
 }
 
 export function error(str: string): string {
-	return message(str, 'ERROR');
+	return message(str, Level.ERROR);
 }
 
-export function event(str: string): string {
-	return message(str, 'EVENT');
+export function event(str: string, id?: string): string {
+	if (id != null) {
+		str = `${id} => ${str}`;
+	}
+
+	return message(str, Level.EVENT);
 }
