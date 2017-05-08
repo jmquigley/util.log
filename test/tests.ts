@@ -29,7 +29,7 @@ test('Test info message log', t => {
 	});
 
 	t.truthy(log);
-	const s = log.info('Test Message');
+	const s = log.info('Test Message', __filename);
 	t.true(typeof s === 'string');
 	t.true(/\[.*INFO \S*\].*/.test(s));
 	t.true(fs.existsSync(logdir));

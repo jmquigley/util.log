@@ -42,9 +42,6 @@
   },
   "main": "./index.js",
   "types": "./index.d.ts",
-  "bin": {
-    "logwatch": "./cli.js"
-  },
   "scripts": {
     "all": "npm install && npm run lint && npm run build && npm test && npm run report",
     "build": "./node_modules/.bin/pkgwrap --build",

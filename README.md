@@ -43,6 +43,13 @@ log.event('button onClick()', 'EVT_BUTTON_PRESSED');
 
 Writes an event message to the `events.log` file.  The `EVT_BUTTON_PRESSED` is an id associated with the event.  This is an optional parameter.
 
+```javascript
+import * as log from 'util.log');
+log.info('This is a log message', __filename);
+```
+
+This will print the log message and the name of the file where the message originated.
+
 
 ## Configuration
 The module is configured with a call to the `.config()`.  It accepts an object with the following parameters:
@@ -59,7 +66,7 @@ The module is configured with a call to the `.config()`.  It accepts an object w
 The module contains the following functions:
 
 - `.configure({})` - overrides the default configuration settings (settings listed above).
-- `.info({string})` - writes an info message to the log.  These are written in green when color is enabled.
-- `.warn({string})` or `warning()` - prints a warning message to the log.  These are written in yellow when color is enabled.
-- `.error({string})` - prints an error message to the log.  If the console logging is enabled, then it also writes to console.error.  These are written in red when color is enabled.
-- `.event({string}, [{id}])` - writes an event message (these are for react/redux events).  Used to track actions as they occur.  These are written to both the messages and the events log.  They are written in blue when color is enabled.
+- `.info({string}[, filename])` - writes an info message to the log.  These are written in green when color is enabled.
+- `.warn({string}[, filename])` or `warning()` - prints a warning message to the log.  These are written in yellow when color is enabled.
+- `.error({string}[, filename])` - prints an error message to the log.  If the console logging is enabled, then it also writes to console.error.  These are written in red when color is enabled.
+- `.event({string}[, {id}, filename])` - writes an event message (these are for react/redux events).  Used to track actions as they occur.  These are written to both the messages and the events log.  They are written in blue when color is enabled.

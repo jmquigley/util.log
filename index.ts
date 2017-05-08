@@ -1,6 +1,7 @@
 'use strict';
 
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import {join} from 'util.join';
 import {timestamp as ts} from 'util.timestamp';
 
@@ -74,11 +75,13 @@ export function configure(cfg?: ILoggingConfig) {
  *
  * This function checks to see if the enviornment has been configured.  If it has
  * not, then it uses the default options.
+ *
  * @param str {string} the string passed to output functions.
  * @param level {Levels} the logging level requested.
+ * @param filename {string} the name of the module where the message originated
  * @returns {str} the message that was written/displayed
  */
-function message(str: string, level: Level): string {
+function message(str: string, level: Level, filename: string = ''): string {
 
 	if (!opts.enabled) {
 		return '';
@@ -109,7 +112,11 @@ function message(str: string, level: Level): string {
 		}
 	}
 
-	const msg = `[${levelStr}] ${ts({dateFormat: opts.dateFormat})} ~> ${str}`;
+	if (filename !== '' && filename != null) {
+		filename = ` \{${path.basename(filename)}\}`;
+	}
+
+	const msg = `[${levelStr}] ${ts({dateFormat: opts.dateFormat})} ~> ${str}${filename}`;
 
 	if (level === Level.EVENT) {
 		fs.appendFileSync(events as any, msg + '\n');
@@ -127,26 +134,26 @@ function message(str: string, level: Level): string {
 	return msg;
 }
 
-export function info(str: string): string {
-	return message(str, Level.INFO);
+export function info(str: string, filename?: string): string {
+	return message(str, Level.INFO, filename);
 }
 
-export function warning(str: string): string {
-	return message(str, Level.WARN);
+export function warning(str: string, filename?: string): string {
+	return message(str, Level.WARN, filename);
 }
 
-export function warn(str: string): string {
-	return warning(str);
+export function warn(str: string, filename?: string): string {
+	return warning(str, filename);
 }
 
-export function error(str: string): string {
-	return message(str, Level.ERROR);
+export function error(str: string, filename?: string): string {
+	return message(str, Level.ERROR, filename);
 }
 
-export function event(str: string, id?: string): string {
+export function event(str: string, id?: string, filename?: string): string {
 	if (id != null) {
 		str = `${id} => ${str}`;
 	}
 
-	return message(str, Level.EVENT);
+	return message(str, Level.EVENT, filename);
 }
