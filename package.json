@@ -1,6 +1,6 @@
 {
   "name": "util.log",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "jmquigley <jmquigley@outlook.com>",
   "description": "A simple logging utility module",
   "private": false,
