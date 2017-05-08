@@ -54,15 +54,19 @@ export function configure(cfg?: ILoggingConfig) {
 		fs.mkdirSync(opts.directory);
 	}
 
-	if (messages != null) {
-		fs.close(messages);
+	if (opts.messages != null) {
+		if (messages != null) {
+			fs.close(messages);
+		}
+		messages = fs.openSync(join(opts.directory, opts.messages), 'a');
 	}
-	messages = fs.openSync(join(opts.directory, opts.messages), 'a');
 
-	if (events != null) {
-		fs.close(events);
+	if (opts.events != null) {
+		if (events != null) {
+			fs.close(events);
+		}
+		events = fs.openSync(join(opts.directory, opts.events), 'a');
 	}
-	events = fs.openSync(join(opts.directory, opts.events), 'a');
 
 	configured = true;
 }
@@ -118,10 +122,13 @@ function message(str: string, level: Level, filename: string = ''): string {
 
 	const msg = `[${levelStr}] ${ts({dateFormat: opts.dateFormat})} ~> ${str}${filename}`;
 
-	if (level === Level.EVENT) {
+	if (level === Level.EVENT && events != null) {
 		fs.appendFileSync(events as any, msg + '\n');
 	}
-	fs.appendFileSync(messages as any, msg + '\n');
+
+	if (messages != null) {
+		fs.appendFileSync(messages as any, msg + '\n');
+	}
 
 	if (opts.toConsole) {
 		if (level === Level.ERROR) {

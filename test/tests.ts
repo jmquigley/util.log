@@ -149,3 +149,24 @@ test('Test disabling the logger and show no message even when called', t => {
 	t.true(fs.existsSync(join(logdir, 'messages.log')));
 	t.true(fs.existsSync(join(logdir, 'events.log')));
 });
+
+test('Test suppression of the message and events log', t => {
+	const fixture = new Fixture();
+	const log = require('../index');
+	const logdir = join(fixture.dir, 'logs');
+
+	log.configure({
+		enabled: true,
+		toConsole: true,
+		directory: logdir,
+		events: null,
+		messages: null
+	});
+
+	t.truthy(log);
+	const s = log.info('Test Message with no event or message log');
+	t.true(typeof s === 'string');
+	t.true(fs.existsSync(logdir));
+	t.false(fs.existsSync(join(logdir, 'messages.log')));
+	t.false(fs.existsSync(join(logdir, 'events.log')));
+});
