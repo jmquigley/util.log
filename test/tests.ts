@@ -20,7 +20,7 @@ test.beforeEach(t => {
 
 test('Test info message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -39,7 +39,7 @@ test('Test info message log', t => {
 });
 
 test('Test info message with no configuration', t => {
-	const log = require('../index');
+	const log = require('../index').default;
 
 	t.truthy(log);
 	const s = log.info('Test Message');
@@ -50,7 +50,7 @@ test('Test info message with no configuration', t => {
 
 test('Test warn message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -70,7 +70,7 @@ test('Test warn message log', t => {
 
 test('Test error message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -90,7 +90,7 @@ test('Test error message log', t => {
 
 test('Test event message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -110,7 +110,7 @@ test('Test event message log', t => {
 
 test('Test calling configuration twice', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -133,7 +133,7 @@ test('Test calling configuration twice', t => {
 
 test('Test disabling the logger and show no message even when called', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
@@ -152,7 +152,7 @@ test('Test disabling the logger and show no message even when called', t => {
 
 test('Test suppression of the message and events log', t => {
 	const fixture = new Fixture();
-	const log = require('../index');
+	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
 
 	log.configure({
