@@ -4,10 +4,14 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {join} from 'util.join';
 import {timestamp as ts} from 'util.timestamp';
+import * as uuid from 'uuid';
 
 const chalk = require('chalk');
 
+const instances = new Map();
+
 enum Level {
+	DEBUG,
 	INFO,
 	WARN,
 	ERROR,
@@ -21,71 +25,69 @@ export interface ILoggingConfig {
 	enabled?: boolean;
 	eventFile?: string;
 	messageFile?: string;
+	namespace?: string;
 	toConsole?: boolean;
 }
 
 export class Logger {
 
-	private _messageFile: string = null;
-	private _eventFile: string = null;
-	private _configured: boolean = false;
-	private _opts: ILoggingConfig = null;
-
-	constructor() {
-		this._opts = {
+	public static instance(config?: ILoggingConfig) {
+		config = Object.assign({
 			colors: true,
 			dateFormat: '%Y-%m-%d @ %H:%M:%S:%L',
 			directory: './logs',
 			enabled: true,
 			eventFile: 'events.log',
 			messageFile: 'messages.log',
+			namespace: 'default',
 			toConsole: false
-		};
-	}
+		}, config);
 
-	/**
-	 * Allows the user to override the default configuration for the simple logger.
-	 * See the ILoggingConfig interface for valid options.
-	 * @param cfg {ILoggingConfig} optional argumets to override the default logger
-	 */
-	public configure(cfg?: ILoggingConfig, self = this) {
-		self._opts = Object.assign(self._opts, cfg);
-
-		if (self._opts.colors) {
-			chalk.enabled = true;
+		if (config.namespace == null) {
+			config.namespace = uuid.v4();
 		}
 
-		if (!fs.existsSync(self._opts.directory)) {
-			fs.mkdirSync(self._opts.directory);
+		let inst: Logger = instances.get(config.namespace);
+		if (inst == null) {
+			inst = new Logger();
+			instances.set(config.namespace, inst);
 		}
 
-		if (self._opts.messageFile != null) {
-			self._messageFile = join(self._opts.directory, self._opts.messageFile);
-			if (!fs.existsSync(self._messageFile)) {
-				fs.writeFileSync(self._messageFile, '');
-			}
-		}
-
-		if (self._opts.eventFile != null) {
-			self._eventFile = join(self._opts.directory, self._opts.eventFile);
-			if (!fs.existsSync(self._eventFile)) {
-				fs.writeFileSync(self._eventFile, '');
-			}
-		}
-
-		self._configured = true;
+		inst.configure(config);
+		return inst;
 	}
 
-	public info(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.INFO, filename);
+	private _messageFile: string = null;
+	private _eventFile: string = null;
+	private _configured: boolean = false;
+	private _config: ILoggingConfig = null;
+
+	private constructor() {
 	}
 
-	public warning(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.WARN, filename);
+	get config(): ILoggingConfig {
+		return this._config;
 	}
 
-	public warn(str: string, filename?: string, self = this): string {
-		return self.warning(str, filename);
+	set config(val: ILoggingConfig) {
+		this._config = val;
+	}
+
+	get namespace(): string {
+		return this._config.namespace;
+	}
+
+	public toString() {
+		const a = [
+			JSON.stringify(this.config, null, 4),
+			'\ninstances:'
+		].concat([...instances.keys()].map(it => ` - ${it}`), '');
+
+		return a.join('\n');
+	}
+
+	public debug(str: string, filename?: string, self = this): string {
+		return self.message(str, Level.DEBUG, filename);
 	}
 
 	public error(str: string, filename?: string, self = this): string {
@@ -98,6 +100,52 @@ export class Logger {
 		}
 
 		return self.message(str, Level.EVENT, filename);
+	}
+
+	public info(str: string, filename?: string, self = this): string {
+		return self.message(str, Level.INFO, filename);
+	}
+
+	public warn(str: string, filename?: string, self = this): string {
+		return self.warning(str, filename);
+	}
+
+	public warning(str: string, filename?: string, self = this): string {
+		return self.message(str, Level.WARN, filename);
+	}
+
+	/**
+	 * Allows the user to override the default configuration for the simple logger.
+	 * See the ILoggingConfig interface for valid options.
+	 * @param config {ILoggingConfig} optional argumets to override the default logger
+	 * @param self {Logger} a reference to the objects this pointer renamed to self.
+	 */
+	private configure(config?: ILoggingConfig, self = this) {
+		self.config = config;
+
+		if (self.config.colors) {
+			chalk.enabled = true;
+		}
+
+		if (!fs.existsSync(self.config.directory)) {
+			fs.mkdirSync(self.config.directory);
+		}
+
+		if (self.config.messageFile != null) {
+			self._messageFile = join(self.config.directory, self.config.messageFile);
+			if (!fs.existsSync(self._messageFile)) {
+				fs.writeFileSync(self._messageFile, '');
+			}
+		}
+
+		if (self.config.eventFile != null) {
+			self._eventFile = join(self.config.directory, self.config.eventFile);
+			if (!fs.existsSync(self._eventFile)) {
+				fs.writeFileSync(self._eventFile, '');
+			}
+		}
+
+		self._configured = true;
 	}
 
 	/**
@@ -116,17 +164,19 @@ export class Logger {
 	 */
 	private message(str: string, level: Level, filename: string = '', self = this): string {
 
-		if (!self._opts.enabled) {
+		if (!self.config.enabled) {
 			return '';
 		}
 
-		if (!self._configured) {
-			self.configure();
-		}
-
+		let timestamp = ts({dateFormat: self.config.dateFormat});
 		let	levelStr = String(level);
-		if (self._opts.colors) {
+
+		if (self.config.colors) {
 			switch (level) {
+			case Level.DEBUG:
+				levelStr = chalk.gray('DEBUG');
+				break;
+
 			case Level.INFO:
 				levelStr = chalk.green('INFO ');
 				break;
@@ -143,13 +193,15 @@ export class Logger {
 				levelStr = chalk.blue('EVENT');
 				break;
 			}
+
+			timestamp = chalk.cyan(timestamp);
 		}
 
 		if (filename !== '' && filename != null) {
 			filename = ` \{${path.basename(filename)}\}`;
 		}
 
-		const msg = `[${levelStr}] ${ts({dateFormat: self._opts.dateFormat})} ~> ${str}${filename}`;
+		const msg = `[${levelStr}] ${timestamp} ~> ${str}${filename}`;
 
 		if (level === Level.EVENT && self._eventFile != null) {
 			fs.appendFileSync(self._eventFile, msg + '\n');
@@ -159,7 +211,7 @@ export class Logger {
 			fs.appendFileSync(self._messageFile, msg + '\n');
 		}
 
-		if (self._opts.toConsole) {
+		if (self.config.toConsole) {
 			if (level === Level.ERROR) {
 				console.error(msg);
 			} else {
@@ -171,4 +223,4 @@ export class Logger {
 	}
 }
 
-export default new Logger();
+export default Logger;

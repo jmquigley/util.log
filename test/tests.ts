@@ -5,11 +5,16 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {Fixture} from 'util.fixture';
 import {join} from 'util.join';
+import * as uuid from 'uuid';
+import logger from '../index';
 import {cleanup} from './helpers';
 
-const r = /\[.*(INFO |WARN |ERROR|EVENT).*\] \d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d* ~> .*/;
+const r = /\[.*(DEBUG|INFO |WARN |ERROR|EVENT).*\] .*\d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d*.* ~> .*/;
 
 test.after.always.cb(t => {
+	const log = logger.instance();
+	console.log(log.toString());
+
 	cleanup(path.basename(__filename), t);
 });
 
@@ -18,16 +23,35 @@ test.beforeEach(t => {
 	t.pass();
 });
 
-test('Test info message log', t => {
+test('Test debug message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		toConsole: true,
-		directory: logdir
+		directory: logdir,
+		namespace: uuid.v4()
 	});
 
+	t.truthy(log);
+	const s = log.debug('Test Message', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[.*DEBUG\S*\].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, r);
+});
+
+test('Test info message log', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		toConsole: true,
+		directory: logdir,
+		namespace: uuid.v4()
+	});
+
+	t.true(typeof log.toString() === 'string');
 	t.truthy(log);
 	const s = log.info('Test Message', __filename);
 	t.true(typeof s === 'string');
@@ -39,7 +63,7 @@ test('Test info message log', t => {
 });
 
 test('Test info message with no configuration', t => {
-	const log = require('../index').default;
+	const log = logger.instance();
 
 	t.truthy(log);
 	const s = log.info('Test Message');
@@ -50,12 +74,11 @@ test('Test info message with no configuration', t => {
 
 test('Test warn message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		toConsole: true,
-		directory: logdir
+		directory: logdir,
+		namespace: uuid.v4()
 	});
 
 	t.truthy(log);
@@ -70,12 +93,11 @@ test('Test warn message log', t => {
 
 test('Test error message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		toConsole: true,
-		directory: logdir
+		directory: logdir,
+		namespace: uuid.v4()
 	});
 
 	t.truthy(log);
@@ -90,12 +112,11 @@ test('Test error message log', t => {
 
 test('Test event message log', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		toConsole: true,
-		directory: logdir
+		directory: logdir,
+		namespace: uuid.v4()
 	});
 
 	t.truthy(log);
@@ -110,14 +131,12 @@ test('Test event message log', t => {
 
 test('Test calling configuration twice', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	let log = logger.instance({
 		directory: logdir
 	});
 
-	log.configure({
+	log = logger.instance({
 		directory: logdir
 	});
 
@@ -133,12 +152,11 @@ test('Test calling configuration twice', t => {
 
 test('Test disabling the logger and show no message even when called', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		enabled: false,
-		directory: logdir
+		directory: logdir,
+		namespace: uuid.v4()
 	});
 
 	t.truthy(log);
@@ -152,15 +170,14 @@ test('Test disabling the logger and show no message even when called', t => {
 
 test('Test suppression of the message and events log', t => {
 	const fixture = new Fixture();
-	const log = require('../index').default;
 	const logdir = join(fixture.dir, 'logs');
-
-	log.configure({
+	const log = logger.instance({
 		enabled: true,
 		toConsole: true,
 		directory: logdir,
 		eventFile: null,
-		messageFile: null
+		messageFile: null,
+		namespace: uuid.v4()
 	});
 
 	t.truthy(log);
@@ -169,4 +186,23 @@ test('Test suppression of the message and events log', t => {
 	t.true(fs.existsSync(logdir));
 	t.false(fs.existsSync(join(logdir, 'messages.log')));
 	t.false(fs.existsSync(join(logdir, 'events.log')));
+});
+
+test('Test using a null namespace value and having one assigned', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		enabled: false,
+		directory: logdir,
+		namespace: null
+	});
+
+	t.truthy(log);
+	const s = log.info('Test Message');
+	t.true(typeof s === 'string');
+	t.is(s, '');
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.truthy(log.namespace);
 });
