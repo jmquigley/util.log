@@ -18,14 +18,14 @@ $ npm run all
 ## Usage
 
 ```javascript
-const log = require('util.log');
+const log = require('util.log').default;
 log.info('This is a log message');
 ```
 
 This uses the default options and logs an info level message to a file.  The message will be written to `./logs/messages.log`.  It will not write the message to `console.log` by default.
 
 ```javascript
-const log = require('util.log');
+const log = require('util.log').default;
 log.configure({
     directory: /var/log/app,
 	toConsole: true
@@ -37,14 +37,14 @@ log.info('This is a log message');
 Similar to the first example.  This overrides the default configuration and changes the directory where the log files will be written.  It also turns on console logging.
 
 ```javascript
-const log = require('util.log');
+const log = require('util.log').default;
 log.event('button onClick()', 'EVT_BUTTON_PRESSED');
 ```
 
 Writes an event message to the `events.log` file.  The `EVT_BUTTON_PRESSED` is an id associated with the event.  This is an optional parameter.
 
 ```javascript
-import * as log from 'util.log');
+import log from 'util.log');
 log.info('This is a log message', __filename);
 ```
 
@@ -58,8 +58,8 @@ The module is configured with a call to the `.config()`.  It accepts an object w
 - `dateFormat` - the timestamp format used in [strftime](https://github.com/samsonjs/strftime).  The default is `%Y-%m-%d @ %H:%M:%S:%L`.
 - `directory` - the directory location for the messages and event log files.  The default is the current directory with `logs` appended to it.
 - `enabled` - a boolean flag.  If true, then the logger will produce messages, otherwise all messages are suppressed and no output is generated.  The default is `true`.
-- `events` - the output file name for all `event` messages.  Any message sent to `log.event()` will be placed in this log file.
-- `messages` - the output file name for all `info|warning|error` messages.  The default is `messages.log`.
+- `eventFile` - the output file name for all `event` messages.  Any message sent to `log.event()` will be placed in this log file.
+- `messageFile` - the output file name for all `info|warning|error` messages.  The default is `messages.log`.
 - `toConsole` - a boolean flag.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `false`.
 
 ## API

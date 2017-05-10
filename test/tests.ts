@@ -159,8 +159,8 @@ test('Test suppression of the message and events log', t => {
 		enabled: true,
 		toConsole: true,
 		directory: logdir,
-		events: null,
-		messages: null
+		eventFile: null,
+		messageFile: null
 	});
 
 	t.truthy(log);

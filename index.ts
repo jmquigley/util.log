@@ -19,15 +19,15 @@ export interface ILoggingConfig {
 	dateFormat?: string;
 	directory?: string;
 	enabled?: boolean;
-	events?: string;
-	messages?: string;
+	eventFile?: string;
+	messageFile?: string;
 	toConsole?: boolean;
 }
 
 export class Logger {
 
-	private _messages: number = null;
-	private _events: number = null;
+	private _messageFile: string = null;
+	private _eventFile: string = null;
 	private _configured: boolean = false;
 	private _opts: ILoggingConfig = null;
 
@@ -37,8 +37,8 @@ export class Logger {
 			dateFormat: '%Y-%m-%d @ %H:%M:%S:%L',
 			directory: './logs',
 			enabled: true,
-			events: 'events.log',
-			messages: 'messages.log',
+			eventFile: 'events.log',
+			messageFile: 'messages.log',
 			toConsole: false
 		};
 	}
@@ -59,18 +59,18 @@ export class Logger {
 			fs.mkdirSync(self._opts.directory);
 		}
 
-		if (self._opts.messages != null) {
-			if (self._messages != null) {
-				fs.close(self._messages);
+		if (self._opts.messageFile != null) {
+			self._messageFile = join(self._opts.directory, self._opts.messageFile);
+			if (!fs.existsSync(self._messageFile)) {
+				fs.writeFileSync(self._messageFile, '');
 			}
-			self._messages = fs.openSync(join(self._opts.directory, self._opts.messages), 'a');
 		}
 
-		if (self._opts.events != null) {
-			if (self._events != null) {
-				fs.close(self._events);
+		if (self._opts.eventFile != null) {
+			self._eventFile = join(self._opts.directory, self._opts.eventFile);
+			if (!fs.existsSync(self._eventFile)) {
+				fs.writeFileSync(self._eventFile, '');
 			}
-			self._events = fs.openSync(join(self._opts.directory, self._opts.events), 'a');
 		}
 
 		self._configured = true;
@@ -151,12 +151,12 @@ export class Logger {
 
 		const msg = `[${levelStr}] ${ts({dateFormat: self._opts.dateFormat})} ~> ${str}${filename}`;
 
-		if (level === Level.EVENT && self._events != null) {
-			fs.appendFileSync(self._events as any, msg + '\n');
+		if (level === Level.EVENT && self._eventFile != null) {
+			fs.appendFileSync(self._eventFile, msg + '\n');
 		}
 
-		if (self._messages != null) {
-			fs.appendFileSync(self._messages as any, msg + '\n');
+		if (self._messageFile != null) {
+			fs.appendFileSync(self._messageFile, msg + '\n');
 		}
 
 		if (self._opts.toConsole) {
