@@ -21,6 +21,7 @@ enum Level {
 export interface ILoggingConfig {
 	colors?: boolean;
 	dateFormat?: string;
+	debug?: boolean;
 	directory?: string;
 	enabled?: boolean;
 	eventFile?: string;
@@ -35,6 +36,7 @@ export class Logger {
 		config = Object.assign({
 			colors: true,
 			dateFormat: '%Y-%m-%d @ %H:%M:%S:%L',
+			debug: false,
 			directory: './logs',
 			enabled: true,
 			eventFile: 'events.log',
@@ -87,7 +89,11 @@ export class Logger {
 	}
 
 	public debug(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.DEBUG, filename);
+		if (self.config.debug) {
+			return self.message(str, Level.DEBUG, filename);
+		}
+
+		return '';
 	}
 
 	public error(str: string, filename?: string, self = this): string {

@@ -27,6 +27,7 @@ test('Test debug message log', t => {
 	const fixture = new Fixture();
 	const logdir = join(fixture.dir, 'logs');
 	const log = logger.instance({
+		debug: true,
 		toConsole: true,
 		directory: logdir,
 		namespace: uuid.v4()
@@ -40,6 +41,25 @@ test('Test debug message log', t => {
 	t.true(fs.existsSync(join(logdir, 'messages.log')));
 	t.true(fs.existsSync(join(logdir, 'events.log')));
 	t.regex(s, r);
+});
+
+test('Test debug message with debugging disabled', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		debug: false,
+		toConsole: true,
+		directory: logdir,
+		namespace: uuid.v4()
+	});
+
+	t.truthy(log);
+	const s = log.debug('Test Message', __filename);
+	t.true(typeof s === 'string');
+	t.true(s === '');
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
 });
 
 test('Test info message log', t => {

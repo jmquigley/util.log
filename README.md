@@ -84,6 +84,7 @@ The `.instance()` method accepts the following parameters as an object to change
 
 - `colors` - Uses the chalk library to add color to the logging level in the messages.  This is on by default.  It adds ASCII escape sequences around the level to provide color (see [chalk](https://www.npmjs.com/package/chalk) module).
 - `dateFormat` - the timestamp format used in [strftime](https://github.com/samsonjs/strftime).  The default is `%Y-%m-%d @ %H:%M:%S:%L`.
+- `debug` - a boolean flag that turns the debug log messages on or off.  If true, then the logger will produce debug messages.  The default is `false`.
 - `directory` - the directory location for the `messages` and `event` log files.  The default is the current directory with `logs` prepended to it.
 - `enabled` - a boolean flag that turns the logger on or off.  If true, then the logger will produce messages, otherwise all messages are suppressed and no output is generated.  The default is `true`.
 - `eventFile` - the output file name for all `event` messages.  Any message sent to `log.event()` will be placed in this log file.
