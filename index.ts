@@ -10,7 +10,6 @@ import * as uuid from 'uuid';
 const chalk = require('chalk');
 
 const instances = new Map();
-const NS_WIDTH = 10;
 
 enum Level {
 	DEBUG,
@@ -30,6 +29,7 @@ export interface ILoggingConfig {
 	messageFile?: string;
 	namespace?: string;
 	toConsole?: boolean;
+	nsWidth?: number;
 }
 
 export class Logger {
@@ -44,6 +44,7 @@ export class Logger {
 			eventFile: 'events.log',
 			messageFile: 'messages.log',
 			namespace: 'default',
+			nsWidth: 15,
 			toConsole: false
 		}, config);
 
@@ -180,9 +181,10 @@ export class Logger {
 			return '';
 		}
 
+		const nsWidth = self.config.nsWidth;
 		let timestamp = ts({dateFormat: self.config.dateFormat});
 		let	levelStr = String(level);
-		let namespace = sprintf(`%' -${NS_WIDTH}s`, self.config.namespace.trim().substr(0, NS_WIDTH));
+		let namespace = sprintf(`%' -${nsWidth}s`, self.config.namespace.trim().substr(0, nsWidth));
 
 		switch (level) {
 		case Level.DEBUG:
