@@ -2,6 +2,7 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import {sprintf} from 'sprintf-js';
 import {join} from 'util.join';
 import {timestamp as ts} from 'util.timestamp';
 import * as uuid from 'uuid';
@@ -9,6 +10,7 @@ import * as uuid from 'uuid';
 const chalk = require('chalk');
 
 const instances = new Map();
+const NS_WIDTH = 10;
 
 enum Level {
 	DEBUG,
@@ -102,7 +104,11 @@ export class Logger {
 
 	public event(str: string, id?: string, filename?: string, self = this): string {
 		if (id != null) {
-			str = `${id} => ${str}`;
+			if (self.config.colors) {
+				str = `${chalk.white.bgBlue(id)} => ${str}`;
+			} else {
+				str = `${id} => ${str}`;
+			}
 		}
 
 		return self.message(str, Level.EVENT, filename);
@@ -176,38 +182,41 @@ export class Logger {
 
 		let timestamp = ts({dateFormat: self.config.dateFormat});
 		let	levelStr = String(level);
+		let namespace = sprintf(`%' -${NS_WIDTH}s`, self.config.namespace.trim().substr(0, NS_WIDTH));
 
-		if (self.config.colors) {
-			switch (level) {
-			case Level.DEBUG:
-				levelStr = chalk.gray('DEBUG');
-				break;
+		switch (level) {
+		case Level.DEBUG:
+			levelStr = (self.config.colors) ? chalk.gray('DEBUG') : 'DEBUG';
+			break;
 
-			case Level.INFO:
-				levelStr = chalk.green('INFO ');
-				break;
+		case Level.INFO:
+			levelStr = (self.config.colors) ? chalk.green('INFO ') : 'INFO ';
+			break;
 
-			case Level.WARN:
-				levelStr = chalk.yellow('WARN ');
-				break;
+		case Level.WARN:
+			levelStr = (self.config.colors) ? chalk.yellow('WARN ') : 'WARN ';
+			break;
 
-			case Level.ERROR:
-				levelStr = chalk.red('ERROR');
-				break;
+		case Level.ERROR:
+			levelStr = (self.config.colors) ? chalk.red('ERROR') : 'ERROR';
+			break;
 
-			case Level.EVENT:
-				levelStr = chalk.blue('EVENT');
-				break;
-			}
-
-			timestamp = chalk.cyan(timestamp);
+		case Level.EVENT:
+			levelStr = (self.config.colors) ? chalk.blue('EVENT') : 'EVENT';
+			break;
 		}
 
 		if (filename !== '' && filename != null) {
-			filename = ` \{${path.basename(filename)}\}`;
+			filename = `\{${path.basename(filename)}\}`;
 		}
 
-		const msg = `[${levelStr}] ${timestamp} ~> ${str}${filename}`;
+		if (self.config.colors) {
+			timestamp = chalk.cyan(timestamp);
+			namespace = chalk.magenta(namespace);
+			filename = chalk.underline(filename);
+		}
+
+		const msg = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str} ${filename}`;
 
 		if (level === Level.EVENT && self._eventFile != null) {
 			fs.appendFileSync(self._eventFile, msg + '\n');

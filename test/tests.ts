@@ -9,7 +9,11 @@ import * as uuid from 'uuid';
 import logger from '../index';
 import {cleanup} from './helpers';
 
-const r = /\[.*(DEBUG|INFO |WARN |ERROR|EVENT).*\] .*\d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d*.* ~> .*/;
+// Regex that looks for color values
+const r = /\[.*(DEBUG|INFO |WARN |ERROR|EVENT).*\] .*\d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d*.* \[.*\] ~> .*/;
+
+// Regex that loosk for no color in the message
+const rnc = /\[(DEBUG|INFO |WARN |ERROR|EVENT)\] \d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d* \[.*\] ~> .*/;
 
 test.after.always.cb(t => {
 	const log = logger.instance();
@@ -140,7 +144,7 @@ test('Test event message log', t => {
 	});
 
 	t.truthy(log);
-	const s = log.event('Test Message', 'SOME_EVENT_ID');
+	const s = log.event('Test Message', 'SOME_EVENT_ID', 'tests.js');
 	t.true(typeof s === 'string');
 	t.true(/\[.*EVENT\S*\].*/.test(s));
 	t.true(fs.existsSync(logdir));
@@ -225,4 +229,57 @@ test('Test using a null namespace value and having one assigned', t => {
 	t.true(fs.existsSync(join(logdir, 'messages.log')));
 	t.true(fs.existsSync(join(logdir, 'events.log')));
 	t.truthy(log.namespace);
+});
+
+test('Test using no color on a log message', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		colors: false,
+		debug: true,
+		toConsole: true,
+		directory: logdir,
+		namespace: 'nocolor'
+	});
+
+	t.truthy(log);
+	let s = log.info('Test Colorless Info', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[INFO \].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, rnc);
+
+	s = log.warn('Test Colorless Warning', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[WARN \].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, rnc);
+
+	s = log.error('Test Colorless Error', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[ERROR\].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, rnc);
+
+	s = log.debug('Test Colorless Debug', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[DEBUG\].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, rnc);
+
+	s = log.event('Test Colorless Event', 'EVT-JUNK', __filename);
+	t.true(typeof s === 'string');
+	t.true(/\[EVENT\].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, rnc);
 });
