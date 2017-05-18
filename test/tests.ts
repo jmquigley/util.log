@@ -153,6 +153,25 @@ test('Test event message log', t => {
 	t.regex(s, r);
 });
 
+test('Test event message log with no event id value', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		toConsole: true,
+		directory: logdir,
+		namespace: uuid.v4()
+	});
+
+	t.truthy(log);
+	const s = log.event('Test Event Message no id', 'tests.js');
+	t.true(typeof s === 'string');
+	t.true(/\[.*EVENT\S*\].*/.test(s));
+	t.true(fs.existsSync(logdir));
+	t.true(fs.existsSync(join(logdir, 'messages.log')));
+	t.true(fs.existsSync(join(logdir, 'events.log')));
+	t.regex(s, r);
+});
+
 test('Test calling configuration twice', t => {
 	const fixture = new Fixture();
 	const logdir = join(fixture.dir, 'logs');
