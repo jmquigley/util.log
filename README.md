@@ -30,7 +30,7 @@ This uses the default options and logs an *info* level message to a file.  The m
 import logger from 'util.log';
 
 const log = logger.instance({
-    directory: /var/log/app,
+	directory: /var/log/app,
 	toConsole: true
 });
 
@@ -64,7 +64,7 @@ import logger from 'util.log';
 
 const log = logger.instance({
 	namespace: 'something',
-    directory: /var/log/app,
+	directory: /var/log/app,
 	toConsole: true
 });
 
