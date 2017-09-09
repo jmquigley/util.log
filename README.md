@@ -5,14 +5,16 @@
 
 ## Installation
 
+This module uses [yarn](https://yarnpkg.com/en/) to manage dependencies and run scripts for development.
+
 To install as an application dependency:
 ```
-$ npm install --save util.log
+$ yarn add --dev util.log
 ```
 
 To build the app and run all tests:
 ```
-$ npm run all
+$ yarn run all
 ```
 
 ## Usage
