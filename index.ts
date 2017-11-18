@@ -64,7 +64,6 @@ export class Logger {
 
 	private _messageFile: string = null;
 	private _eventFile: string = null;
-	private _configured: boolean = false;
 	private _config: ILoggingConfig = null;
 
 	private constructor() {
@@ -157,8 +156,6 @@ export class Logger {
 				fs.writeFileSync(self._eventFile, '');
 			}
 		}
-
-		self._configured = true;
 	}
 
 	/**
