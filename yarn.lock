@@ -50,15 +50,25 @@
   dependencies:
     chalk "*"
 
+"@types/events@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
+
 "@types/fs-extra@4.0.5":
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.5.tgz#8aa6033c0e87c653b09a6711686916864b48ec9e"
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^8.0.53":
+"@types/node@*":
   version "8.0.53"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
+
+"@types/node@^8.0.54":
+  version "8.0.54"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.54.tgz#3fd9357db4af388b79e03845340259440edffde6"
+  dependencies:
+    "@types/events" "*"
 
 "@types/sprintf-js@1.1.0":
   version "1.1.0"
@@ -1638,7 +1648,7 @@ globby@^6.0.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-globby@^7.0.0:
+globby@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/globby/-/globby-7.1.1.tgz#fb2ccff9401f8600945dfada97440cca972b8680"
   dependencies:
@@ -3762,26 +3772,26 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
 
-util.chdir@0.0.32:
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/util.chdir/-/util.chdir-0.0.32.tgz#44b7aef972dfc1f30f407a92e90ef64243ecd567"
+util.chdir@0.0.33:
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/util.chdir/-/util.chdir-0.0.33.tgz#d1b8a35c5509097850f8914fa55af3cd90e83464"
   dependencies:
     fs-extra "^4.0.2"
 
-util.constants@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/util.constants/-/util.constants-0.0.6.tgz#0d38eb97e9f4f6b1472e767b6dcce5f94987ecdf"
+util.constants@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/util.constants/-/util.constants-0.0.7.tgz#e0a979b9009eb36eba7119c952ff4b1037e24122"
 
-util.filelist@0.0.26:
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/util.filelist/-/util.filelist-0.0.26.tgz#6ace0e67d2021ed725c67daea872d31e100142b1"
+util.filelist@0.0.27:
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/util.filelist/-/util.filelist-0.0.27.tgz#fba3aeb23625c222e634cb5078ac344832f8f0ca"
   dependencies:
     fs-extra "^4.0.2"
-    util.rstrip "0.0.28"
+    util.rstrip "0.0.32"
 
-util.fixture@0.0.60:
-  version "0.0.60"
-  resolved "https://registry.yarnpkg.com/util.fixture/-/util.fixture-0.0.60.tgz#0636028b629694f8fe3fb30fa5b2ba75c0b2a5f3"
+util.fixture@0.0.61:
+  version "0.0.61"
+  resolved "https://registry.yarnpkg.com/util.fixture/-/util.fixture-0.0.61.tgz#35cbd776613cc1cf66e05b96a505311f6f3c98e7"
   dependencies:
     fs-extra "^4.0.2"
     klaw-sync "^3.0.2"
@@ -3789,71 +3799,67 @@ util.fixture@0.0.60:
     lorem-ipsum "^1.0.4"
     rimraf "^2.6.2"
     string-template "^1.0.0"
-    util.chdir "0.0.32"
-    util.constants "^0.0.6"
-    util.filelist "0.0.26"
-    util.join "0.0.16"
-    util.toolbox "0.0.55"
-    util.wait "0.0.29"
+    util.chdir "0.0.33"
+    util.constants "^0.0.7"
+    util.filelist "0.0.27"
+    util.join "0.0.17"
+    util.toolbox "0.0.56"
+    util.wait "0.0.30"
     uuid "^3.1.0"
 
-util.home@0.0.21:
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/util.home/-/util.home-0.0.21.tgz#17d80435b45c83399c66258f091a08ed9cef0dbb"
+util.home@0.0.22:
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/util.home/-/util.home-0.0.22.tgz#7337991e8353cc59d5c5ca4569611d4fa98c7f4f"
   dependencies:
-    util.toolbox "0.0.55"
+    util.toolbox "0.0.56"
 
-util.join@0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/util.join/-/util.join-0.0.16.tgz#b3eddfa5e1f7095ff2a180625250e6f0c321211f"
+util.join@0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/util.join/-/util.join-0.0.17.tgz#505c221aa689ec8437d3618382646178c6ce20ee"
   dependencies:
-    util.home "0.0.21"
+    util.home "0.0.22"
 
-util.pkgwrap@0.0.73:
-  version "0.0.73"
-  resolved "https://registry.yarnpkg.com/util.pkgwrap/-/util.pkgwrap-0.0.73.tgz#2702889cffaa5fe762bed3c79960e17020680d9e"
+util.pkgwrap@^0.0.88:
+  version "0.0.88"
+  resolved "https://registry.yarnpkg.com/util.pkgwrap/-/util.pkgwrap-0.0.88.tgz#784f7638cad641e6a78301828e7861a2948797f8"
   dependencies:
+    coveralls "^3.0.0"
     cpx "^1.5.0"
     cross-env "^5.1.1"
     expand-home-dir "github:jmquigley/expand-home-dir"
     fs-extra "^4.0.2"
-    globby "^7.0.0"
+    globby "^7.1.1"
     jsdoc "^3.5.5"
     jsdoc-to-markdown "^3.0.2"
     klaw-sync "^3.0.2"
     lodash "^4.17.4"
+    nyc "^11.3.0"
     rimraf "^2.6.2"
     workerpool "^2.3.0"
     yargs "^10.0.3"
 
-util.rstrip@0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/util.rstrip/-/util.rstrip-0.0.28.tgz#f4d7261025027dc18a81b33817b111699090c133"
-  dependencies:
-    util.pkgwrap "0.0.73"
+util.rstrip@0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/util.rstrip/-/util.rstrip-0.0.32.tgz#1bf181332582dbf31b31989cec61e52c8e098e12"
 
-util.rstrip@0.0.31:
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/util.rstrip/-/util.rstrip-0.0.31.tgz#4e5006667467f4c6da239272385ab130083e420a"
-
-util.timestamp@0.0.34:
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/util.timestamp/-/util.timestamp-0.0.34.tgz#e0345396c9937653c1fdb3da7bd5e5bae1194848"
+util.timestamp@0.0.35:
+  version "0.0.35"
+  resolved "https://registry.yarnpkg.com/util.timestamp/-/util.timestamp-0.0.35.tgz#98bef19ad574dfdf12a56adbd6bdc02546bb4d1a"
   dependencies:
     strftime "^0.10.0"
 
-util.toolbox@0.0.55:
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/util.toolbox/-/util.toolbox-0.0.55.tgz#5123d096c0ad4e1e6cba519b00f3c700e72c98d9"
+util.toolbox@0.0.56:
+  version "0.0.56"
+  resolved "https://registry.yarnpkg.com/util.toolbox/-/util.toolbox-0.0.56.tgz#27611c5a9997a9287c87d562f97058377b72ab7a"
   dependencies:
     fs-extra "^4.0.2"
-    util.constants "^0.0.6"
-    util.rstrip "0.0.31"
+    util.constants "^0.0.7"
+    util.rstrip "0.0.32"
     uuid "^3.1.0"
 
-util.wait@0.0.29:
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/util.wait/-/util.wait-0.0.29.tgz#26be7dfdb7f0a8e2d8b1b7f07df7f711d0b2a1f9"
+util.wait@0.0.30:
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/util.wait/-/util.wait-0.0.30.tgz#e3678d66381afc39bfb10a691792183c6257b415"
 
 uuid@^3.0.0, uuid@^3.1.0:
   version "3.1.0"
