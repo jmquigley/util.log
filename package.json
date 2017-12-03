@@ -21,8 +21,8 @@
     "chalk": "^2.3.0",
     "fs-extra": "^4.0.2",
     "sprintf-js": "^1.1.1",
-    "util.join": "0.0.15",
-    "util.timestamp": "0.0.33",
+    "util.join": "0.0.16",
+    "util.timestamp": "0.0.34",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -31,12 +31,12 @@
     "@types/node": "^8.0.53",
     "@types/sprintf-js": "1.1.0",
     "@types/uuid": "^3.4.3",
-    "ava": "^0.23.0",
+    "ava": "^0.24.0",
     "coveralls": "^3.0.0",
     "nyc": "^11.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1",
-    "util.fixture": "0.0.59"
+    "typescript": "^2.6.2",
+    "util.fixture": "0.0.60"
   },
   "scripts": {
     "all": "yarn install && yarn run build && yarn test && yarn run report",
