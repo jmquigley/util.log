@@ -302,3 +302,21 @@ test('Test using no color on a log message', t => {
 	t.true(fs.existsSync(join(logdir, 'events.log')));
 	t.regex(s, rnc);
 });
+
+test('Test writing log output to bad output source', t => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, 'logs');
+	const log = logger.instance({
+		directory: logdir
+	});
+
+	t.truthy(log);
+	fs.unlink(join(logdir, 'messages.log'));
+	fs.unlink(join(logdir, 'events.log'));
+	t.true(fs.existsSync(logdir));
+	t.false(fs.existsSync(join(logdir, 'messages.log')));
+	t.false(fs.existsSync(join(logdir, 'events.log')));
+
+	const s = log.info('Test Message');
+	t.true(typeof s === 'string');
+});

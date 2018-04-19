@@ -217,20 +217,24 @@ export class Logger {
 
 		const msg = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str} ${filename}`;
 
-		if (level === Level.EVENT && self._eventFile != null) {
-			fs.appendFileSync(self._eventFile, msg + '\n');
-		}
-
-		if (self._messageFile != null) {
-			fs.appendFileSync(self._messageFile, msg + '\n');
-		}
-
-		if (self.config.toConsole) {
-			if (level === Level.ERROR) {
-				console.error(msg);
-			} else {
-				console.log(msg);
+		try {
+			if (level === Level.EVENT && self._eventFile != null && fs.existsSync(self._eventFile)) {
+				fs.appendFileSync(self._eventFile, msg + '\n');
 			}
+
+			if (self._messageFile != null && fs.existsSync(self._messageFile)) {
+				fs.appendFileSync(self._messageFile, msg + '\n');
+			}
+
+			if (self.config.toConsole) {
+				if (level === Level.ERROR) {
+					console.error(msg);
+				} else {
+					console.log(msg);
+				}
+			}
+		} catch (err) {
+			console.warn(`log output no longer available: ${err}`);
 		}
 
 		return msg;
