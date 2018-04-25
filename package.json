@@ -21,8 +21,8 @@
     "chalk": "^2.4.0",
     "fs-extra": "^5.0.0",
     "sprintf-js": "^1.1.1",
-    "util.join": "0.0.18",
-    "util.timestamp": "0.0.36",
+    "util.join": "0.0.19",
+    "util.timestamp": "0.0.37",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
@@ -35,8 +35,8 @@
     "coveralls": "^3.0.0",
     "nyc": "^11.7.1",
     "tslint": "^5.9.1",
-    "typescript": "^2.8.1",
-    "util.fixture": "0.0.62",
+    "typescript": "^2.8.3",
+    "util.fixture": "0.0.63",
     "util.pkgwrap": "^0.0.91"
   },
   "scripts": {

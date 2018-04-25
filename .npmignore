@@ -19,3 +19,4 @@ test.d.ts
 *.js.map
 gulpfile.js
 yarn.lock
+yarn-error.log
