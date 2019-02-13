@@ -1,14 +1,12 @@
-'use strict';
+"use strict";
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import {sprintf} from 'sprintf-js';
-import {join} from 'util.join';
-import {timestamp as ts} from 'util.timestamp';
-import * as uuid from 'uuid';
+import * as fs from "fs-extra";
+import {sprintf} from "sprintf-js";
+import {join} from "util.join";
+import {timestamp as ts} from "util.timestamp";
+import * as uuid from "uuid";
 
-const chalk = require('chalk');
-
+const chalk = require("chalk");
 const instances = new Map();
 
 enum Level {
@@ -19,7 +17,7 @@ enum Level {
 	EVENT
 }
 
-export interface ILoggingConfig {
+export interface LoggingConfig {
 	colors?: boolean;
 	dateFormat?: string;
 	debug?: boolean;
@@ -33,20 +31,22 @@ export interface ILoggingConfig {
 }
 
 export class Logger {
-
-	public static instance(config?: ILoggingConfig) {
-		config = Object.assign({
-			colors: true,
-			dateFormat: '%Y-%m-%d @ %H:%M:%S:%L',
-			debug: false,
-			directory: './logs',
-			enabled: true,
-			eventFile: 'events.log',
-			messageFile: 'messages.log',
-			namespace: 'default',
-			nsWidth: 15,
-			toConsole: false
-		}, config);
+	public static instance(config?: LoggingConfig) {
+		config = Object.assign(
+			{
+				colors: true,
+				dateFormat: "%Y-%m-%d @ %H:%M:%S:%L",
+				debug: false,
+				directory: "./logs",
+				enabled: true,
+				eventFile: "events.log",
+				messageFile: "messages.log",
+				namespace: "default",
+				nsWidth: 15,
+				toConsole: true
+			},
+			config
+		);
 
 		if (config.namespace == null) {
 			config.namespace = uuid.v4();
@@ -64,16 +64,15 @@ export class Logger {
 
 	private _messageFile: string = null;
 	private _eventFile: string = null;
-	private _config: ILoggingConfig = null;
+	private _config: LoggingConfig = null;
 
-	private constructor() {
-	}
+	private constructor() {}
 
-	get config(): ILoggingConfig {
+	get config(): LoggingConfig {
 		return this._config;
 	}
 
-	set config(val: ILoggingConfig) {
+	set config(val: LoggingConfig) {
 		this._config = val;
 	}
 
@@ -82,80 +81,108 @@ export class Logger {
 	}
 
 	public toString() {
-		const a = [
-			JSON.stringify(this.config, null, 4),
-			'\ninstances:'
-		].concat([...instances.keys()].map(it => ` - ${it}`), '');
+		const a = [JSON.stringify(this.config, null, 4), "\ninstances:"].concat(
+			[...instances.keys()].map((it) => ` - ${it}`),
+			""
+		);
 
-		return a.join('\n');
+		return a.join("\n");
 	}
 
-	public debug(str: string, filename?: string, self = this): string {
-		if (self.config.debug) {
-			return self.message(str, Level.DEBUG, filename);
+	public debug(): string {
+		if (this.config.debug) {
+			const {str, args} = this.getArgs(arguments);
+			return this.message(str, Level.DEBUG, args);
 		}
 
-		return '';
+		return "";
 	}
 
-	public error(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.ERROR, filename);
+	public error(): string {
+		const {str, args} = this.getArgs(arguments);
+		return this.message(str, Level.ERROR, args);
 	}
 
-	public event(str: string, id?: string, filename?: string, self = this): string {
-		if (id != null) {
-			if (self.config.colors) {
-				str = `${chalk.white.bgBlue(id)} => ${str}`;
-			} else {
-				str = `${id} => ${str}`;
-			}
+	public event(id: string): string {
+		// Strip off the ID argument before processing
+		const {str, args} = this.getArgs([...arguments].slice(1));
+		let s: string = str;
+
+		if (id == null) {
+			id = "NULL_EVENT_ID";
 		}
 
-		return self.message(str, Level.EVENT, filename);
+		if (this.config.colors) {
+			s = `${chalk.white.bgBlue(id)} => ${str}`;
+		} else {
+			s = `${id} => ${str}`;
+		}
+
+		return this.message(s, Level.EVENT, args);
 	}
 
-	public info(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.INFO, filename);
+	public info(): string {
+		const {str, args} = this.getArgs(arguments);
+		return this.message(str, Level.INFO, args);
 	}
 
-	public warn(str: string, filename?: string, self = this): string {
-		return self.warning(str, filename);
+	public warn(): string {
+		const {str, args} = this.getArgs(arguments);
+		return this.message(str, Level.WARN, args);
 	}
 
-	public warning(str: string, filename?: string, self = this): string {
-		return self.message(str, Level.WARN, filename);
+	public warning(): string {
+		const {str, args} = this.getArgs(arguments);
+		return this.message(str, Level.WARN, args);
 	}
 
 	/**
 	 * Allows the user to override the default configuration for the simple logger.
-	 * See the ILoggingConfig interface for valid options.
-	 * @param config {ILoggingConfig} optional argumets to override the default logger
-	 * @param self {Logger} a reference to the objects this pointer renamed to self.
+	 * See the LoggingConfig interface for valid options.
+	 * @param config {LoggingConfig} optional argumets to override the default logger
 	 */
-	private configure(config?: ILoggingConfig, self = this) {
-		self.config = config;
+	private configure(config?: LoggingConfig) {
+		this.config = config;
 
-		if (self.config.colors) {
+		if (this.config.colors) {
 			chalk.enabled = true;
 		}
 
-		if (!fs.existsSync(self.config.directory)) {
-			fs.mkdirSync(self.config.directory);
+		if (!fs.existsSync(this.config.directory)) {
+			fs.mkdirSync(this.config.directory);
 		}
 
-		if (self.config.messageFile != null) {
-			self._messageFile = join(self.config.directory, self.config.messageFile);
-			if (!fs.existsSync(self._messageFile)) {
-				fs.writeFileSync(self._messageFile, '');
+		if (this.config.messageFile != null) {
+			this._messageFile = join(
+				this.config.directory,
+				this.config.messageFile
+			);
+			if (!fs.existsSync(this._messageFile)) {
+				fs.writeFileSync(this._messageFile, "");
 			}
 		}
 
-		if (self.config.eventFile != null) {
-			self._eventFile = join(self.config.directory, self.config.eventFile);
-			if (!fs.existsSync(self._eventFile)) {
-				fs.writeFileSync(self._eventFile, '');
+		if (this.config.eventFile != null) {
+			this._eventFile = join(
+				this.config.directory,
+				this.config.eventFile
+			);
+			if (!fs.existsSync(this._eventFile)) {
+				fs.writeFileSync(this._eventFile, "");
 			}
 		}
+	}
+
+	/**
+	 * Convenience method for processing and sanitizing the arguments passed into
+	 * each of the logign functions
+	 * @param inp {any} a reference to a java arguments object
+	 */
+	private getArgs(inp: any): any {
+		return {
+			str: inp.length >= 1 ? inp[0] : "",
+			args: inp.length > 1 ? [...inp].slice(1) : []
+		};
 	}
 
 	/**
@@ -167,77 +194,75 @@ export class Logger {
 	 * This function checks to see if the enviornment has been configured.  If it has
 	 * not, then it uses the default options.
 	 *
-	 * @param str {string} the string passed to output functions.
+	 * @param str {string} the string passed to output (sprintf)) functions.
 	 * @param level {Levels} the logging level requested.
-	 * @param filename {string} the name of the module where the message originated
+	 * @param args {any[]} An array of arguments passed to the sprintf function.
 	 * @returns {str} the message that was written/displayed
 	 */
-	private message(str: string, level: Level, filename: string = '', self = this): string {
-
-		if (!self.config.enabled) {
-			return '';
+	private message(str: string, level: Level, args: any[]): string {
+		if (!this.config.enabled) {
+			return "";
 		}
 
-		const nsWidth = self.config.nsWidth;
-		let timestamp = ts({dateFormat: self.config.dateFormat});
-		let	levelStr = String(level);
-		let namespace = sprintf(`%' -${nsWidth}s`, self.config.namespace.trim().substr(0, nsWidth));
+		const nsWidth = this.config.nsWidth;
+		let timestamp = ts({dateFormat: this.config.dateFormat});
+		let levelStr = String(level);
+		let namespace = sprintf(
+			`%' -${nsWidth}s`,
+			this.config.namespace.trim().substr(0, nsWidth)
+		);
 
 		switch (level) {
-		case Level.DEBUG:
-			levelStr = (self.config.colors) ? chalk.gray('DEBUG') : 'DEBUG';
-			break;
+			case Level.DEBUG:
+				levelStr = this.config.colors ? chalk.gray("DEBUG") : "DEBUG";
+				break;
 
-		case Level.INFO:
-			levelStr = (self.config.colors) ? chalk.green('INFO ') : 'INFO ';
-			break;
+			case Level.INFO:
+				levelStr = this.config.colors ? chalk.green("INFO ") : "INFO ";
+				break;
 
-		case Level.WARN:
-			levelStr = (self.config.colors) ? chalk.yellow('WARN ') : 'WARN ';
-			break;
+			case Level.WARN:
+				levelStr = this.config.colors ? chalk.yellow("WARN ") : "WARN ";
+				break;
 
-		case Level.ERROR:
-			levelStr = (self.config.colors) ? chalk.red('ERROR') : 'ERROR';
-			break;
+			case Level.ERROR:
+				levelStr = this.config.colors ? chalk.red("ERROR") : "ERROR";
+				break;
 
-		case Level.EVENT:
-			levelStr = (self.config.colors) ? chalk.blue('EVENT') : 'EVENT';
-			break;
+			case Level.EVENT:
+				levelStr = this.config.colors ? chalk.blue("EVENT") : "EVENT";
+				break;
 		}
 
-		if (filename !== '' && filename != null) {
-			filename = `\{${path.basename(filename)}\}`;
-		}
-
-		if (self.config.colors) {
+		if (this.config.colors) {
 			timestamp = chalk.cyan(timestamp);
 			namespace = chalk.magenta(namespace);
-			filename = chalk.underline(filename);
 		}
 
-		const msg = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str} ${filename}`;
+		const conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
+		const logMessage = sprintf(conMessage, ...args);
 
-		try {
-			if (level === Level.EVENT && self._eventFile != null && fs.existsSync(self._eventFile)) {
-				fs.appendFileSync(self._eventFile, msg + '\n');
-			}
-
-			if (self._messageFile != null && fs.existsSync(self._messageFile)) {
-				fs.appendFileSync(self._messageFile, msg + '\n');
-			}
-
-			if (self.config.toConsole) {
-				if (level === Level.ERROR) {
-					console.error(msg);
-				} else {
-					console.log(msg);
-				}
-			}
-		} catch (err) {
-			console.warn(`log output no longer available: ${err}`);
+		if (
+			level === Level.EVENT &&
+			this._eventFile != null &&
+			fs.existsSync(this._eventFile)
+		) {
+			fs.appendFileSync(this._eventFile, logMessage + "\n");
 		}
 
-		return msg;
+		if (this._messageFile != null && fs.existsSync(this._messageFile)) {
+			fs.appendFileSync(this._messageFile, logMessage + "\n");
+		}
+
+		if (this.config.toConsole) {
+			if (level === Level.ERROR) {
+				console.error(conMessage, ...args);
+			} else {
+				console.log(conMessage, ...args);
+			}
+		}
+
+		return logMessage;
 	}
 }
 

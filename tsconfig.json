@@ -1,13 +1,18 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"baseUrl": ".",
 		"declaration": true,
 		"experimentalDecorators": true,
 		"inlineSourceMap": true,
+		"lib": ["DOM", "ESNext"],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+		"removeComments": false,
 		"skipLibCheck": true,
 		"sourceMap": false,
 		"strictNullChecks": false,
@@ -16,8 +21,15 @@
 		"target": "es6"
 	},
 	"exclude": [
+		"build",
 		"coverage",
+		"dist",
+		"docs",
+		"packages",
 		"node_modules",
-		"__tests__"
+		"tmp",
+		"**/__tests__/*",
+		"**/*.test.tsx",
+		"**/*.test.ts"
 	]
 }

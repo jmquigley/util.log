@@ -1,80 +1,82 @@
 {
-  "name": "util.log",
-  "version": "0.0.27",
-  "author": "jmquigley <jmquigley@outlook.com>",
-  "description": "A simple logging utility module",
-  "main": "./index.js",
-  "types": "./index.d.ts",
-  "private": false,
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jmquigley/util.log"
-  },
-  "bugs": {
-    "url": "https://github.com/jmquigley/util.log/issues"
-  },
-  "engines": {
-    "node": ">=7.x"
-  },
-  "dependencies": {
-    "chalk": "^2.4.2",
-    "fs-extra": "^7.0.1",
-    "sprintf-js": "^1.1.2",
-    "util.join": "0.0.21",
-    "util.timestamp": "0.0.38",
-    "uuid": "^3.3.2"
-  },
-  "devDependencies": {
-    "@types/chalk": "^2.2.0",
-    "@types/fs-extra": "5.0.4",
-    "@types/node": "^10.12.18",
-    "@types/sprintf-js": "1.1.1",
-    "@types/uuid": "^3.4.4",
-    "coveralls": "^3.0.2",
-    "jest": "^23.6.0",
-    "tslint": "^5.12.0",
-    "typescript": "^3.2.2",
-    "typescript-babel-jest": "^1.0.5",
-    "util.fixture": "0.0.65",
-    "util.pkgwrap": "^0.0.94"
-  },
-  "pkgwrap": {
-    "cleanup": [
-      "index.d.ts",
-      "index.js"
-    ]
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/node_modules/"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx",
-      "json"
-    ],
-    "notify": false,
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "__tests__/helpers"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-    "transform": {
-      "^.+\\.ts?$": "typescript-babel-jest"
-    },
-    "verbose": false
-  },
-  "scripts": {
-    "all": "yarn install && yarn run build && yarn test",
-    "build": "yarn clean && yarn run lint && pkgwrap --build",
-    "clean": "pkgwrap --clean",
-    "coverage": "pkgwrap --coverage --jest",
-    "lint": "pkgwrap --lint",
-    "prepublishOnly": "yarn run all",
-    "test": "pkgwrap --testing --jest"
-  }
+	"name": "util.log",
+	"version": "0.0.27",
+	"author": "jmquigley <jmquigley@outlook.com>",
+	"description": "A simple logging utility module",
+	"main": "./index.js",
+	"types": "./index.d.ts",
+	"private": false,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jmquigley/util.log"
+	},
+	"bugs": {
+		"url": "https://github.com/jmquigley/util.log/issues"
+	},
+	"engines": {
+		"node": ">=7.x"
+	},
+	"dependencies": {
+		"chalk": "^2.4.2",
+		"fs-extra": "^7.0.1",
+		"sprintf-js": "^1.1.2",
+		"util.join": "0.0.21",
+		"util.timestamp": "0.0.38",
+		"uuid": "^3.3.2"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.2.3",
+		"@babel/core": "^7.2.2",
+		"@babel/preset-env": "^7.3.1",
+		"@babel/preset-typescript": "^7.1.0",
+		"@babel/runtime": "^7.3.1",
+		"@types/chalk": "^2.2.0",
+		"@types/fs-extra": "5.0.4",
+		"@types/node": "^10.12.18",
+		"@types/sprintf-js": "1.1.1",
+		"@types/uuid": "^3.4.4",
+		"coveralls": "^3.0.2",
+		"jest": "^24.1.0",
+		"prettier": "^1.16.4",
+		"tslint": "^5.12.0",
+		"tslint-config-prettier": "^1.18.0",
+		"typescript": "^3.2.2",
+		"util.fixture": "0.0.65",
+		"util.pkgwrap": "^0.0.94"
+	},
+	"pkgwrap": {
+		"cleanup": [
+			"index.d.ts",
+			"index.js"
+		]
+	},
+	"jest": {
+		"collectCoverage": true,
+		"coveragePathIgnorePatterns": [
+			"<rootDir>/__tests__"
+		],
+		"moduleFileExtensions": [
+			"js",
+			"jsx",
+			"ts",
+			"tsx",
+			"json"
+		],
+		"notify": false,
+		"testPathIgnorePatterns": [
+			"__tests__/helpers"
+		],
+		"verbose": false
+	},
+	"scripts": {
+		"all": "yarn install && yarn run prettier && yarn run build && yarn test",
+		"build": "yarn clean && yarn run lint && pkgwrap --build",
+		"clean": "pkgwrap --clean",
+		"coverage": "pkgwrap --coverage --jest",
+		"lint": "pkgwrap --lint",
+		"prepublishOnly": "yarn run all",
+		"prettier": "prettier --loglevel silent --write \"**/*.{ts,tsx,json,yaml,yml,css}\"",
+		"test": "pkgwrap --testing --jest"
+	}
 }

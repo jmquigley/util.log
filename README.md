@@ -2,11 +2,13 @@
 
 > A simple logging utility module
 
-[![Build Status](https://travis-ci.org/jmquigley/util.log.svg?branch=master)](https://travis-ci.org/jmquigley/util.log)
-[![tslint code style](https://img.shields.io/badge/code_style-TSlint-5ed9c7.svg)](https://palantir.github.io/tslint/)
-[![Test Runner](https://img.shields.io/badge/testing-jest-blue.svg)](https://facebook.github.io/jest/)
+[![build](https://travis-ci.org/jmquigley/util.log.svg?branch=master)](https://travis-ci.org/jmquigley/util.log)
+[![analysis](https://img.shields.io/badge/analysis-tslint-9cf.svg)](https://palantir.github.io/tslint/)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![testing](https://img.shields.io/badge/testing-jest-blue.svg)](https://facebook.github.io/jest/)
 [![NPM](https://img.shields.io/npm/v/util.log.svg)](https://www.npmjs.com/package/util.log)
-[![Coverage Status](https://coveralls.io/repos/github/jmquigley/util.log/badge.svg?branch=master)](https://coveralls.io/github/jmquigley/util.log?branch=master)
+[![coverage](https://coveralls.io/repos/github/jmquigley/util.log/badge.svg?branch=master)](https://coveralls.io/github/jmquigley/util.log?branch=master)
+
 
 ## Installation
 
@@ -31,56 +33,56 @@ const log = logger.instance();
 log.info('This is a log message');
 ```
 
-This uses the default options and logs an *info* level message to a file.  The message will be written to `./logs/messages.log`.  It will not write the message to `console.log` by default.
+Uses the default options and logs an *info* level message to a file and to the console.  The messages passed to each logging function can contain variables.  They wrap the [sprintf.js](https://github.com/alexei/sprintf.js) module and allow dynamic formatting of the message.
+
+```javascript
+import logger from 'util.log';
+
+const log = logger.instance();
+
+const x: number = 42;
+log.info('This is a log message: %d', x);
+```
+
+This code writes the log message to *info* and take in the dynamic *x* parameter as part of the outut string.  The next example shows how to override the default configuration:
 
 ```javascript
 import logger from 'util.log';
 
 const log = logger.instance({
 	directory: '/var/log/app',
-	toConsole: true
+	toConsole: false
 });
 
 log.info('This is a log message');
 
 ```
-Similar to the first example.  This overrides the default configuration and changes the directory where the log files will be written.  This will write the log file `/var/log/app/messages.log`.  It also turns on console logging.
+Similar to the first example.  This overrides the default configuration and changes the output directory where the log files will be written.  This will write the log file `/var/log/app/messages.log`.  It also turns off console logging so the message is only written to the file.
 
 ```javascript
 import logger from 'util.log';
 
 const log = logger.instance();
-log.event('button onClick()', 'EVT_BUTTON_PRESSED');
+log.event('EVT_BUTTON_PRESSED', 'button onClick()');
 ```
 
-Writes an event message to the `./logs/events.log` file.  The `EVT_BUTTON_PRESSED` is a string id associated with the event.  This is an optional parameter.  It's just a string that can be used to represent the event name.
+Writes an event message to the `./logs/events.log` file.  The `EVT_BUTTON_PRESSED` is a string id associated with the event.  It's just a string that can be used to represent the event name, but allows for routing/watching events segregated from the other messaging.  Note that all messages are written to the main log file, but that events have a special designation.
 
-```javascript
-import logger from 'util.log');
-
-const log = logger.instance();
-log.info('This is a log message', __filename);
-```
-
-This will print the log message and the name of the file where the message originated.
-
-All of the instances above are using the **default** (or root) logger.  The configuration options are associated with this namespace.  This behavior can be changed by using the `namespace` option when getting an instance.
+All of the instances above are using the **default** (or root) logger.  The configuration options are associated with this *namespace*.  This behavior can be changed by using the `namespace` option when retrieving an instance.
 
 ```javascript
 import logger from 'util.log';
 
 const log = logger.instance({
 	namespace: 'something',
-	directory: '/var/log/app',
-	toConsole: true
+	directory: '/var/log/app'
 });
 
 log.info('This is a log message');
 ```
 
-This instance is associated with the *something* configuration namespace.  The default configuration still exists and an instance of it can be retrieved.  This allows multiple logging configurations to coexist.  **If no namespace is given, then the configuration is changing the default configuration**.
+This logging instance is associated with the *something* configuration namespace.  The default configuration still exists and an instance of it can be retrieved and used.  This allows multiple logging configurations to coexist by namespace.  **If no namespace is given, then the value 'default' is used**.  If an *undefined* namespace is given, then a UUID is generated and assigned as the namespace.
 
-If an *undefined* namespace is given, then one is generated and assigned a UUID.
 
 ### Example Output
 ![Example Output](example.png)
@@ -98,15 +100,15 @@ The `.instance()` method accepts the following parameters as an object to change
 - `messageFile` - the output file name for all `debug|info|warning|error` messages.  The default is `messages.log`.
 - `namespace` - a unique name given to a logger instance.  By default is is `default` if no value is given when the instance is requested.
 - `nsWidth` - the output message prints the namespace value.  It is truncated at a maxium length determined by this value.  The default is 15 characters.  If it is lesss than this size, then it is right padded with spaces.
-- `toConsole` - a boolean flag that turns console logging on or off.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `false`.
+- `toConsole` - a boolean flag that turns console logging on or off.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `true`.
 
 ## API
 The module contains the following instance functions (after a successful call to `.instance()`):
 
 
-- `.debug({string}[, filename])` - writes a debug message to the log.  This message is written in gray.
-- `.error({string}[, filename])` - prints an error message to the log.  If the console logging is enabled, then it also writes to console.error.  These are written in red when color is enabled.
-- `.event({string}[, {id}, filename])` - writes an event message (these are for react/redux events).  Used to track actions as they occur.  These are written to both the messages and the events log.  They are written in blue when color is enabled.
-- `.info({string}[, filename])` - writes an info message to the log.  These are written in green when color is enabled.
+- `.debug({string}[, args])` - writes a debug message to the log.  This message is written in gray.
+- `.error({string}[, args])` - prints an error message to the log.  If the console logging is enabled, then it also writes to console.error.  These are written in red when color is enabled.
+- `.event(id, [{string}, args])` - writes an event message (these are typically for react/redux events).  Used to track actions as they occur.  These are written to both the messages and the events log.  They are written in blue when color is enabled.
+- `.info({string}[, args])` - writes an info message to the log.  These are written in green when color is enabled.
 - `.instance([{}])` - retrieves an instance of a logger.  This takes the configuration for this instance as an optional parameter.
-- `.warn({string}[, filename])` or `warning()` - prints a warning message to the log.  These are written in yellow when color is enabled.
+- `.warn({string}[, args])` or `warning()` - prints a warning message to the log.  These are written in yellow when color is enabled.
