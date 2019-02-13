@@ -89,23 +89,23 @@ export class Logger {
 		return a.join("\n");
 	}
 
-	public debug(): string {
+	public debug(...args: any[]): string {
 		if (this.config.debug) {
-			const {str, args} = this.getArgs(arguments);
-			return this.message(str, Level.DEBUG, args);
+			const {str, arr} = this.getArgs(args);
+			return this.message(str, Level.DEBUG, arr);
 		}
 
 		return "";
 	}
 
-	public error(): string {
-		const {str, args} = this.getArgs(arguments);
-		return this.message(str, Level.ERROR, args);
+	public error(...args: any[]): string {
+		const {str, arr} = this.getArgs(args);
+		return this.message(str, Level.ERROR, arr);
 	}
 
-	public event(id: string): string {
+	public event(id: string, ...args: any[]): string {
 		// Strip off the ID argument before processing
-		const {str, args} = this.getArgs([...arguments].slice(1));
+		const {str, arr} = this.getArgs([...args].slice(1));
 		let s: string = str;
 
 		if (id == null) {
@@ -118,22 +118,22 @@ export class Logger {
 			s = `${id} => ${str}`;
 		}
 
-		return this.message(s, Level.EVENT, args);
+		return this.message(s, Level.EVENT, arr);
 	}
 
-	public info(): string {
-		const {str, args} = this.getArgs(arguments);
-		return this.message(str, Level.INFO, args);
+	public info(...args: any[]): string {
+		const {str, arr} = this.getArgs(args);
+		return this.message(str, Level.INFO, arr);
 	}
 
-	public warn(): string {
-		const {str, args} = this.getArgs(arguments);
-		return this.message(str, Level.WARN, args);
+	public warn(...args: any[]): string {
+		const {str, arr} = this.getArgs(args);
+		return this.message(str, Level.WARN, arr);
 	}
 
-	public warning(): string {
-		const {str, args} = this.getArgs(arguments);
-		return this.message(str, Level.WARN, args);
+	public warning(...args: any[]): string {
+		const {str, arr} = this.getArgs(args);
+		return this.message(str, Level.WARN, arr);
 	}
 
 	/**
@@ -181,7 +181,7 @@ export class Logger {
 	private getArgs(inp: any): any {
 		return {
 			str: inp.length >= 1 ? inp[0] : "",
-			args: inp.length > 1 ? [...inp].slice(1) : []
+			arr: inp.length > 1 ? [...inp].slice(1) : []
 		};
 	}
 
