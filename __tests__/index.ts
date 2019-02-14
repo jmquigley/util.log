@@ -351,3 +351,35 @@ test("Test a dynamic log message with a circular object reference parameter", ()
 	expect(fs.existsSync(join(logdir, "events.log"))).toBe(true);
 	expect(s).toMatch(r);
 });
+
+test("Test using %j, %o, %O, and %J syntax", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		directory: logdir
+	});
+
+	const obj = {
+		a: "x",
+		b: "y"
+	};
+
+	expect(typeof log.toString() === "string").toBe(true);
+	expect(log).toBeDefined();
+
+	let s = log.info("Test with %j replacement: [%j]", obj);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+
+	s = log.info("Test with %J replacement: [%J]", obj);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+
+	s = log.info("Test with %O replacement: [%O]", obj);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+
+	s = log.info("Test with %o replacement: [%o]", obj);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+});

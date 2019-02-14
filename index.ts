@@ -240,7 +240,12 @@ export class Logger {
 		}
 
 		let conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
-		const logMessage = sprintf(conMessage, ...args);
+		console.log(`conMessage: ${conMessage}`);
+
+		const logMessage = sprintf(
+			conMessage.replace(/%[OoJ]/g, "%j"),
+			...args
+		);
 
 		if (
 			level === Level.EVENT &&
@@ -256,7 +261,7 @@ export class Logger {
 
 		if (this.config.toConsole) {
 			// The console doens't accept the %j/%J, so replace it with one it can (%O)
-			conMessage = conMessage.replace(/%[jJ]/g, "%O");
+			conMessage = conMessage.replace(/%J/g, "%O").replace(/%j/g, "%o");
 
 			if (level === Level.ERROR) {
 				console.error(conMessage, ...args);
