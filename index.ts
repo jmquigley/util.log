@@ -240,8 +240,6 @@ export class Logger {
 		}
 
 		let conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
-		console.log(`conMessage: ${conMessage}`);
-
 		const logMessage = sprintf(
 			conMessage.replace(/%[OoJ]/g, "%j"),
 			...args

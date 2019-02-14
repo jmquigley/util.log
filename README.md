@@ -33,7 +33,7 @@ const log = logger.instance();
 log.info('This is a log message');
 ```
 
-Uses the default options and logs an *info* level message to a file and to the console.  The messages passed to each logging function can contain variables.  They wrap the [sprintf.js](https://github.com/alexei/sprintf.js) module and allow dynamic formatting of the message.
+Uses the default options and logs an *info* level message to a file and to the console.  The messages passed to each logging function can contain variables.  They wrap the [sprintf.js](https://github.com/jmquigley/sprintf.js) module and allow dynamic formatting of the message.  See that module for formatting options.
 
 ```javascript
 import logger from 'util.log';
