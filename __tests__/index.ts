@@ -326,3 +326,28 @@ test("Test using no color on a log message", () => {
 	expect(fs.existsSync(join(logdir, "events.log"))).toBe(true);
 	expect(s).toMatch(rnc);
 });
+
+test("Test a dynamic log message with a circular object reference parameter", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		directory: logdir
+	});
+
+	var i = {a: "x", ref: null};
+	var j = {b: "y", ref: null};
+	var k = {c: "z", ref: null};
+	i.ref = j;
+	j.ref = k;
+	k.ref = i;
+
+	expect(typeof log.toString() === "string").toBe(true);
+	expect(log).toBeDefined();
+	const s = log.info("Test with circular object reference: [%j]", i);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+	expect(fs.existsSync(logdir)).toBe(true);
+	expect(fs.existsSync(join(logdir, "messages.log"))).toBe(true);
+	expect(fs.existsSync(join(logdir, "events.log"))).toBe(true);
+	expect(s).toMatch(r);
+});

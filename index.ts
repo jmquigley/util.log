@@ -239,7 +239,7 @@ export class Logger {
 			namespace = chalk.magenta(namespace);
 		}
 
-		const conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
+		let conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
 		const logMessage = sprintf(conMessage, ...args);
 
 		if (
@@ -255,6 +255,9 @@ export class Logger {
 		}
 
 		if (this.config.toConsole) {
+			// The console doens't accept the %j/%J, so replace it with one it can (%O)
+			conMessage = conMessage.replace(/%[jJ]/g, "%O");
+
 			if (level === Level.ERROR) {
 				console.error(conMessage, ...args);
 			} else {
