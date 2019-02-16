@@ -20,7 +20,7 @@
 	"dependencies": {
 		"chalk": "^2.4.2",
 		"fs-extra": "^7.0.1",
-		"sprintf-js": "https://github.com/jmquigley/sprintf.js.git",
+		"sprintf-js": "https://github.com/jmquigley/sprintf.js.git#dc62b1c",
 		"util.join": "0.0.21",
 		"util.timestamp": "0.0.38",
 		"uuid": "^3.3.2"
