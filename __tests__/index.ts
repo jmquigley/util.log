@@ -32,7 +32,8 @@ test("Test debug message log", () => {
 	const log = logger.instance({
 		debug: true,
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -51,7 +52,8 @@ test("Test debug message with debugging disabled", () => {
 	const log = logger.instance({
 		debug: false,
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -68,7 +70,8 @@ test("Test info message log", () => {
 	const logdir = join(fixture.dir, "logs");
 	const log = logger.instance({
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(typeof log.toString() === "string").toBe(true);
@@ -109,7 +112,8 @@ test("Test warn message log", () => {
 	const logdir = join(fixture.dir, "logs");
 	const log = logger.instance({
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -127,7 +131,8 @@ test("Test warning message log", () => {
 	const logdir = join(fixture.dir, "logs");
 	const log = logger.instance({
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -145,7 +150,8 @@ test("Test error message log", () => {
 	const logdir = join(fixture.dir, "logs");
 	const log = logger.instance({
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -164,7 +170,8 @@ test("Test event message log", () => {
 	const log = logger.instance({
 		toConsole: true,
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -183,7 +190,8 @@ test("Test event message log with no event id value", () => {
 	const log = logger.instance({
 		toConsole: true,
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -225,7 +233,8 @@ test("Test disabling the logger and show no message even when called", () => {
 	const log = logger.instance({
 		enabled: false,
 		directory: logdir,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -245,7 +254,8 @@ test("Test suppression of the message and events log", () => {
 		directory: logdir,
 		eventFile: null,
 		messageFile: null,
-		namespace: uuid.v4()
+		namespace: uuid.v4(),
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -282,7 +292,8 @@ test("Test using no color on a log message", () => {
 		colors: false,
 		debug: true,
 		directory: logdir,
-		namespace: "nocolor"
+		namespace: "nocolor",
+		nsWidth: 7
 	});
 
 	expect(log).toBeDefined();
@@ -382,4 +393,34 @@ test("Test using %j, %o, %O, and %J syntax", () => {
 	s = log.info("Test with %o replacement: [%o]", obj);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+});
+
+test("Create info message with newline characters", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		directory: logdir,
+		namespace: uuid.v4()
+	});
+
+	expect(log).toBeDefined();
+	const s = log.info("\n%s\n%s\n%s", "str1", "str2", "str3");
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+	expect(s).toMatch(r);
+});
+
+test("Test info message with default namespace sizing and uuid", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		directory: logdir,
+		namespace: uuid.v4()
+	});
+
+	expect(log).toBeDefined();
+	const s = log.info("message with long namespace");
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+	expect(s).toMatch(r);
 });

@@ -76,7 +76,7 @@
 		"coverage": "pkgwrap --coverage --jest",
 		"lint": "pkgwrap --lint",
 		"prepublishOnly": "yarn run all",
-		"prettier": "prettier --loglevel silent --write \"**/*.{ts,tsx,json,yaml,yml,css}\"",
+		"prettier": "prettier --write \"**/*.{ts,tsx,json,yaml,yml,css}\"",
 		"test": "pkgwrap --testing --jest"
 	}
 }

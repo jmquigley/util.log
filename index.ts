@@ -42,7 +42,7 @@ export class Logger {
 				eventFile: "events.log",
 				messageFile: "messages.log",
 				namespace: "default",
-				nsWidth: 15,
+				nsWidth: -1,
 				toConsole: true
 			},
 			config
@@ -207,10 +207,14 @@ export class Logger {
 		const nsWidth = this.config.nsWidth;
 		let timestamp = ts({dateFormat: this.config.dateFormat});
 		let levelStr = String(level);
-		let namespace = sprintf(
-			`%' -${nsWidth}s`,
-			this.config.namespace.trim().substr(0, nsWidth)
-		);
+		let nsFormat: string = "%s";
+		let namespace: string = this.config.namespace.trim();
+
+		if (nsWidth > 0) {
+			nsFormat = `%' -${nsWidth}s`;
+			namespace = namespace.substr(0, nsWidth);
+		}
+		namespace = sprintf(nsFormat, namespace);
 
 		switch (level) {
 			case Level.DEBUG:
