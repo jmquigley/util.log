@@ -26,6 +26,7 @@ export interface LoggingConfig {
 	eventFile?: string;
 	messageFile?: string;
 	namespace?: string;
+	nofile?: boolean;
 	toConsole?: boolean;
 	nsWidth?: number;
 }
@@ -42,6 +43,7 @@ export class Logger {
 				eventFile: "events.log",
 				messageFile: "messages.log",
 				namespace: "default",
+				nofile: false,
 				nsWidth: -1,
 				toConsole: true
 			},
@@ -148,27 +150,29 @@ export class Logger {
 			chalk.enabled = true;
 		}
 
-		if (!fs.existsSync(this.config.directory)) {
-			fs.mkdirSync(this.config.directory);
-		}
-
-		if (this.config.messageFile != null) {
-			this._messageFile = join(
-				this.config.directory,
-				this.config.messageFile
-			);
-			if (!fs.existsSync(this._messageFile)) {
-				fs.writeFileSync(this._messageFile, "");
+		if (!this.config.nofile) {
+			if (!fs.existsSync(this.config.directory)) {
+				fs.mkdirSync(this.config.directory);
 			}
-		}
 
-		if (this.config.eventFile != null) {
-			this._eventFile = join(
-				this.config.directory,
-				this.config.eventFile
-			);
-			if (!fs.existsSync(this._eventFile)) {
-				fs.writeFileSync(this._eventFile, "");
+			if (this.config.messageFile != null) {
+				this._messageFile = join(
+					this.config.directory,
+					this.config.messageFile
+				);
+				if (!fs.existsSync(this._messageFile)) {
+					fs.writeFileSync(this._messageFile, "");
+				}
+			}
+
+			if (this.config.eventFile != null) {
+				this._eventFile = join(
+					this.config.directory,
+					this.config.eventFile
+				);
+				if (!fs.existsSync(this._eventFile)) {
+					fs.writeFileSync(this._eventFile, "");
+				}
 			}
 		}
 	}
@@ -249,16 +253,18 @@ export class Logger {
 			...args
 		);
 
-		if (
-			level === Level.EVENT &&
-			this._eventFile != null &&
-			fs.existsSync(this._eventFile)
-		) {
-			fs.appendFileSync(this._eventFile, logMessage + "\n");
-		}
+		if (!this.config.nofile || this.config.directory == null) {
+			if (
+				level === Level.EVENT &&
+				this._eventFile != null &&
+				fs.existsSync(this._eventFile)
+			) {
+				fs.appendFileSync(this._eventFile, logMessage + "\n");
+			}
 
-		if (this._messageFile != null && fs.existsSync(this._messageFile)) {
-			fs.appendFileSync(this._messageFile, logMessage + "\n");
+			if (this._messageFile != null && fs.existsSync(this._messageFile)) {
+				fs.appendFileSync(this._messageFile, logMessage + "\n");
+			}
 		}
 
 		if (this.config.toConsole) {

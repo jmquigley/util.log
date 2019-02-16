@@ -424,3 +424,22 @@ test("Test info message with default namespace sizing and uuid", () => {
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 	expect(s).toMatch(r);
 });
+
+test("Test info message without creating files (console only)", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		debug: true,
+		directory: logdir,
+		nofile: true
+	});
+
+	expect(log).toBeDefined();
+	const s = log.info("Test Message info with no log files");
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
+	expect(fs.existsSync(logdir)).toBe(false);
+	expect(fs.existsSync(join(logdir, "messages.log"))).toBe(false);
+	expect(fs.existsSync(join(logdir, "events.log"))).toBe(false);
+	expect(s).toMatch(r);
+});

@@ -99,6 +99,7 @@ The `.instance()` method accepts the following parameters as an object to change
 - `eventFile` - the output file name for all `event` messages.  Any message sent to `log.event()` will be placed in this log file.
 - `messageFile` - the output file name for all `debug|info|warning|error` messages.  The default is `messages.log`.
 - `namespace` - a unique name given to a logger instance.  By default is is `default` if no value is given when the instance is requested.
+- `nofile` - if this is true, then no file output will be generated.  Only console output.  The module creates the files by default (set to false)
 - `nsWidth` - the output message prints the namespace value.  It is truncated at a maxium length determined by this value.  The default is 15 characters.  If it is lesss than this size, then it is right padded with spaces.  If the value is set to `-1` then the namespace value is set to the width of the namespace (the default).
 - `toConsole` - a boolean flag that turns console logging on or off.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `true`.
 
