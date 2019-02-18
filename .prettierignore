@@ -7,3 +7,5 @@ highlights
 node_modules
 vendor
 *.d.ts
+*.map.js
+*.min.js

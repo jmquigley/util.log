@@ -3,8 +3,6 @@
 	"version": "0.0.36",
 	"author": "jmquigley <jmquigley@outlook.com>",
 	"description": "A simple logging utility module",
-	"main": "./index.js",
-	"types": "./index.d.ts",
 	"private": false,
 	"license": "MIT",
 	"repository": {
@@ -17,12 +15,14 @@
 	"engines": {
 		"node": ">=7.x"
 	},
+	"main": "./index.min.js",
+	"types": "./index.d.ts",
 	"dependencies": {
 		"chalk": "^2.4.2",
 		"fs-extra": "^7.0.1",
 		"sprintf-js": "https://github.com/jmquigley/sprintf.js.git#dc62b1c",
-		"util.join": "0.0.21",
-		"util.timestamp": "0.0.38",
+		"util.join": "0.0.22",
+		"util.timestamp": "0.0.39",
 		"uuid": "^3.3.2"
 	},
 	"devDependencies": {
@@ -33,50 +33,30 @@
 		"@babel/runtime": "^7.3.1",
 		"@types/chalk": "^2.2.0",
 		"@types/fs-extra": "5.0.5",
+		"@types/jest": "^24.0.5",
 		"@types/node": "^11.9.4",
 		"@types/sprintf-js": "1.1.2",
 		"@types/uuid": "^3.4.4",
+		"babel-minify": "^0.5.0",
 		"coveralls": "^3.0.2",
 		"jest": "^24.1.0",
 		"prettier": "^1.16.4",
 		"tslint": "^5.12.1",
 		"tslint-config-prettier": "^1.18.0",
 		"typescript": "^3.3.3",
-		"util.fixture": "0.0.65",
-		"util.pkgwrap": "^0.0.94"
-	},
-	"pkgwrap": {
-		"cleanup": [
-			"index.d.ts",
-			"index.js"
-		]
-	},
-	"jest": {
-		"collectCoverage": true,
-		"coveragePathIgnorePatterns": [
-			"<rootDir>/__tests__"
-		],
-		"moduleFileExtensions": [
-			"js",
-			"jsx",
-			"ts",
-			"tsx",
-			"json"
-		],
-		"notify": false,
-		"testPathIgnorePatterns": [
-			"__tests__/helpers"
-		],
-		"verbose": false
+		"util.fixture": "0.0.66",
+		"util.pkgwrap": "^0.0.98"
 	},
 	"scripts": {
-		"all": "yarn install && yarn run prettier && yarn run build && yarn test",
-		"build": "yarn clean && yarn run lint && pkgwrap --build",
+		"all": "yarn install && yarn prettier && yarn build && yarn test && yarn minify",
+		"build": "yarn clean && yarn lint && pkgwrap --build",
 		"clean": "pkgwrap --clean",
+		"clean:dist": "yarn clean && rimraf node_modules/ yarn.lock",
 		"coverage": "pkgwrap --coverage --jest",
 		"lint": "pkgwrap --lint",
+		"minify": "minify ./index.js --out-file ./index.min.js",
 		"prepublishOnly": "yarn run all",
-		"prettier": "prettier --write \"**/*.{ts,tsx,json,yaml,yml,css}\"",
-		"test": "pkgwrap --testing --jest"
+		"prettier": "prettier --write \"**/*.{ts,tsx,js,json,yaml,yml,css}\"",
+		"test": "jest"
 	}
 }
