@@ -46,6 +46,27 @@ test("Test debug message log", () => {
 	expect(s).toMatch(r);
 });
 
+test("Test debug message to the console instead of debug module", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		debug: true,
+		directory: logdir,
+		namespace: uuid.v4(),
+		nsWidth: 7,
+		useConsoleDebug: true
+	});
+
+	expect(log).toBeDefined();
+	const s = log.debug("Test Message debug to console: [%d]", param);
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*DEBUG\S*\].*/.test(s)).toBe(true);
+	expect(fs.existsSync(logdir)).toBe(true);
+	expect(fs.existsSync(join(logdir, "messages.log"))).toBe(true);
+	expect(fs.existsSync(join(logdir, "events.log"))).toBe(true);
+	expect(s).toMatch(r);
+});
+
 test("Test debug message with debugging disabled", () => {
 	const fixture = new Fixture();
 	const logdir = join(fixture.dir, "logs");

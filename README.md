@@ -9,6 +9,8 @@
 [![NPM](https://img.shields.io/npm/v/util.log.svg)](https://www.npmjs.com/package/util.log)
 [![coverage](https://coveralls.io/repos/github/jmquigley/util.log/badge.svg?branch=master)](https://coveralls.io/github/jmquigley/util.log?branch=master)
 
+A wrapper for output messages similar to log4j in java.  This module is intended for node/electron environments as it will write to files in the local environment.  It intercepts log messages and routes them to the console and to an output file.  A special case exists for debug messages where it wraps the [debug](https://www.npmjs.com/package/debug) module.
+
 
 ## Installation
 
@@ -23,6 +25,7 @@ To build the app and run all tests:
 ```
 $ yarn run all
 ```
+
 
 ## Usage
 
@@ -102,6 +105,7 @@ The `.instance()` method accepts the following parameters as an object to change
 - `nofile` - if this is true, then no file output will be generated.  Only console output.  The module creates the files by default (set to false)
 - `nsWidth` - the output message prints the namespace value.  It is truncated at a maxium length determined by this value.  The default is 15 characters.  If it is lesss than this size, then it is right padded with spaces.  If the value is set to `-1` then the namespace value is set to the width of the namespace (the default).
 - `toConsole` - a boolean flag that turns console logging on or off.  If true, then the message written to the log is also written to console.log/error, otherwise it the message is suppressed from the console.  The default is `true`.
+- `useConsoleDebug` - a boolean flag that routes debug messages to console instead of the [debug](https://www.npmjs.com/package/debug) package.  This is false by default (using the debug module)
 
 ## API
 The module contains the following instance functions (after a successful call to `.instance()`):

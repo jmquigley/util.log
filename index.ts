@@ -7,6 +7,8 @@ import {timestamp as ts} from "util.timestamp";
 import * as uuid from "uuid";
 
 const chalk = require("chalk");
+const debugEntry = require("debug");
+
 const instances = new Map();
 
 enum Level {
@@ -27,8 +29,9 @@ export interface LoggingConfig {
 	messageFile?: string;
 	namespace?: string;
 	nofile?: boolean;
-	toConsole?: boolean;
 	nsWidth?: number;
+	toConsole?: boolean;
+	useConsoleDebug?: boolean;
 }
 
 export class Logger {
@@ -45,7 +48,8 @@ export class Logger {
 				namespace: "default",
 				nofile: false,
 				nsWidth: -1,
-				toConsole: true
+				toConsole: true,
+				useConsoleDebug: false
 			},
 			config
 		);
@@ -64,9 +68,10 @@ export class Logger {
 		return inst;
 	}
 
-	private _messageFile: string = null;
-	private _eventFile: string = null;
+	private _debug: any = null;
 	private _config: LoggingConfig = null;
+	private _eventFile: string = null;
+	private _messageFile: string = null;
 
 	private constructor() {}
 
@@ -94,7 +99,7 @@ export class Logger {
 	public debug(...args: any[]): string {
 		if (this.config.debug) {
 			const {str, arr} = this.getArgs(args);
-			return this.message(str, Level.DEBUG, arr);
+			return this.showMessage(str, Level.DEBUG, arr);
 		}
 
 		return "";
@@ -102,7 +107,7 @@ export class Logger {
 
 	public error(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
-		return this.message(str, Level.ERROR, arr);
+		return this.showMessage(str, Level.ERROR, arr);
 	}
 
 	public event(id: string, ...args: any[]): string {
@@ -120,22 +125,22 @@ export class Logger {
 			s = `${id} => ${str}`;
 		}
 
-		return this.message(s, Level.EVENT, arr);
+		return this.showMessage(s, Level.EVENT, arr);
 	}
 
 	public info(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
-		return this.message(str, Level.INFO, arr);
+		return this.showMessage(str, Level.INFO, arr);
 	}
 
 	public warn(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
-		return this.message(str, Level.WARN, arr);
+		return this.showMessage(str, Level.WARN, arr);
 	}
 
 	public warning(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
-		return this.message(str, Level.WARN, arr);
+		return this.showMessage(str, Level.WARN, arr);
 	}
 
 	/**
@@ -175,6 +180,8 @@ export class Logger {
 				}
 			}
 		}
+
+		this._debug = debugEntry(config.namespace);
 	}
 
 	/**
@@ -198,12 +205,12 @@ export class Logger {
 	 * This function checks to see if the enviornment has been configured.  If it has
 	 * not, then it uses the default options.
 	 *
-	 * @param str {string} the string passed to output (sprintf)) functions.
+	 * @param message {string} the string passed to output (sprintf)) functions.
 	 * @param level {Levels} the logging level requested.
 	 * @param args {any[]} An array of arguments passed to the sprintf function.
 	 * @returns {str} the message that was written/displayed
 	 */
-	private message(str: string, level: Level, args: any[]): string {
+	private showMessage(message: string, level: Level, args: any[]): string {
 		if (!this.config.enabled) {
 			return "";
 		}
@@ -247,7 +254,7 @@ export class Logger {
 			namespace = chalk.magenta(namespace);
 		}
 
-		let conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${str}`;
+		let conMessage = `[${levelStr}] ${timestamp} [${namespace}] ~> ${message}`;
 		const logMessage = sprintf(
 			conMessage.replace(/%[OoJ]/g, "%j"),
 			...args
@@ -268,13 +275,20 @@ export class Logger {
 		}
 
 		if (this.config.toConsole) {
-			// The console doens't accept the %j/%J, so replace it with one it can (%O)
-			conMessage = conMessage.replace(/%J/g, "%O").replace(/%j/g, "%o");
-
-			if (level === Level.ERROR) {
-				console.error(conMessage, ...args);
+			if (level === Level.DEBUG && !this._config.useConsoleDebug) {
+				conMessage = `${timestamp} ~> ${message}`;
+				this._debug(conMessage, ...args);
 			} else {
-				console.log(conMessage, ...args);
+				// The console doens't accept the %j/%J, so replace it with one it can (%O)
+				conMessage = conMessage
+					.replace(/%J/g, "%O")
+					.replace(/%j/g, "%o");
+
+				if (level === Level.ERROR) {
+					console.error(conMessage, ...args);
+				} else {
+					console.log(conMessage, ...args);
+				}
 			}
 		}
 
