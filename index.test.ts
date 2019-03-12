@@ -2,11 +2,10 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import {Fixture} from "util.fixture";
+import {cleanup, Fixture} from "util.fixture";
 import {join} from "util.join";
 import * as uuid from "uuid";
-import logger from "../index";
-import {cleanup} from "./helpers";
+import logger from "./index";
 
 // Regex that looks for color values
 const r = /\[.*(DEBUG|INFO |WARN |ERROR|EVENT).*\] .*\d{4}-\d{2}-\d{2} @ \d*:\d*:\d*:\d*.* \[.*\] ~> .*/;
@@ -17,7 +16,7 @@ const rnc = /\[(DEBUG|INFO |WARN |ERROR|EVENT)\] \d{4}-\d{2}-\d{2} @ \d*:\d*:\d*
 afterAll((done) => {
 	const log = logger.instance();
 	console.log(log.toString());
-	cleanup(path.basename(__filename), done);
+	cleanup({done, message: path.basename(__filename)});
 });
 
 beforeEach(() => {
