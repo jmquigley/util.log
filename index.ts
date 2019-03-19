@@ -1,5 +1,6 @@
 "use strict";
 
+import autobind from "autobind-decorator";
 import * as fs from "fs-extra";
 import {sprintf} from "sprintf-js";
 import {join} from "util.join";
@@ -96,6 +97,7 @@ export class Logger {
 		return a.join("\n");
 	}
 
+	@autobind
 	public debug(...args: any[]): string {
 		if (this.config.debug) {
 			const {str, arr} = this.getArgs(args);
@@ -105,39 +107,44 @@ export class Logger {
 		return "";
 	}
 
+	@autobind
 	public error(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
 		return this.showMessage(str, Level.ERROR, arr);
 	}
 
+	@autobind
 	public event(id: string, ...args: any[]): string {
 		// Strip off the ID argument before processing
-		const {str, arr} = this.getArgs([...args].slice(1));
-		let s: string = str;
+		const {str, arr} = this.getArgs([...args]);
 
 		if (id == null) {
 			id = "NULL_EVENT_ID";
 		}
 
+		let formattedMessage: string;
 		if (this.config.colors) {
-			s = `${chalk.white.bgBlue(id)} => ${str}`;
+			formattedMessage = `${chalk.white.bgBlue(id)}:: ${str}`;
 		} else {
-			s = `${id} => ${str}`;
+			formattedMessage = `${id}:: ${str}`;
 		}
 
-		return this.showMessage(s, Level.EVENT, arr);
+		return this.showMessage(formattedMessage, Level.EVENT, arr);
 	}
 
+	@autobind
 	public info(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
 		return this.showMessage(str, Level.INFO, arr);
 	}
 
+	@autobind
 	public warn(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
 		return this.showMessage(str, Level.WARN, arr);
 	}
 
+	@autobind
 	public warning(...args: any[]): string {
 		const {str, arr} = this.getArgs(args);
 		return this.showMessage(str, Level.WARN, arr);
@@ -275,7 +282,10 @@ export class Logger {
 		}
 
 		if (this.config.toConsole) {
-			if (level === Level.DEBUG && !this._config.useConsoleDebug) {
+			if (
+				(level === Level.DEBUG || level === Level.EVENT) &&
+				!this._config.useConsoleDebug
+			) {
 				conMessage = `${timestamp} ~> ${message}`;
 				this._debug(conMessage, ...args);
 			} else {

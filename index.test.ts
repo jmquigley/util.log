@@ -36,7 +36,7 @@ test("Test debug message log", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.debug("Test Message debug: [%d]", param);
+	const s = log.debug("Test debug message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*DEBUG\S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -57,7 +57,7 @@ test("Test debug message to the console instead of debug module", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.debug("Test Message debug to console: [%d]", param);
+	const s = log.debug("Test debug message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*DEBUG\S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -77,7 +77,7 @@ test("Test debug message with debugging disabled", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.debug("Test Message debug: [%d]", param);
+	const s = log.debug("Test debug message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(s === "").toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -96,7 +96,7 @@ test("Test info message log", () => {
 
 	expect(typeof log.toString() === "string").toBe(true);
 	expect(log).toBeDefined();
-	const s = log.info("Test Message info: [%d]", param);
+	const s = log.info("Test info message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -109,7 +109,7 @@ test("Test info message with no configuration", () => {
 	const log = logger.instance();
 
 	expect(log).toBeDefined();
-	const s = log.info("Test Message info");
+	const s = log.info("Test info message");
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 	expect(s).toMatch(r);
@@ -121,7 +121,7 @@ test("Test info message with no console output", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.info("Test Message info");
+	const s = log.info("Test info message");
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 	expect(s).toMatch(r);
@@ -137,7 +137,7 @@ test("Test warn message log", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.warn("Test Message warn: [%d]", param);
+	const s = log.warn("Test warn message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*WARN \S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -156,7 +156,7 @@ test("Test warning message log", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.warning("Test Message warning: [%d]", param);
+	const s = log.warning("Test warning message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*WARN \S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -175,7 +175,7 @@ test("Test error message log", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.error("Test Message: [%d]", param);
+	const s = log.error("Test error message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*ERROR\S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -195,7 +195,7 @@ test("Test event message log", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.event("SOME_EVENT_ID", "test message: [%d]", param);
+	const s = log.event("SOME_EVENT_ID", "test event message: [%d]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*EVENT\S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
@@ -215,7 +215,7 @@ test("Test event message log with no event id value", () => {
 	});
 
 	expect(log).toBeDefined();
-	const s = log.event(null, "Test Event Message no id: [%s]", param);
+	const s = log.event(null, "Test event message no id: [%s]", param);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*EVENT\S*\].*/.test(s)).toBe(true);
 	expect(fs.existsSync(logdir)).toBe(true);
