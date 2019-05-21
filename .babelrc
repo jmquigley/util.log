@@ -1,4 +1,11 @@
 {
-	"presets": ["@babel/env", "@babel/typescript", "minify"],
-	"plugins": ["@babel/transform-modules-umd", "babel-plugin-espower"]
+	"presets": ["minify", "@babel/env", "@babel/preset-typescript"],
+	"plugins": [
+		"babel-plugin-espower",
+		"@babel/plugin-transform-modules-commonjs",
+		"@babel/transform-runtime",
+		["@babel/proposal-decorators", {"legacy": true}],
+		"@babel/plugin-proposal-class-properties"
+	],
+	"comments": false
 }

@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from "fs-extra";
 import * as path from "path";
 import {cleanup, Fixture} from "util.fixture";
@@ -109,7 +107,7 @@ test("Test info message with no configuration", () => {
 	const log = logger.instance();
 
 	expect(log).toBeDefined();
-	const s = log.info("Test info message");
+	const s = log.info("Test info message with no configuration");
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 	expect(s).toMatch(r);
@@ -365,9 +363,9 @@ test("Test a dynamic log message with a circular object reference parameter", ()
 		directory: logdir
 	});
 
-	var i = {a: "x", ref: null};
-	var j = {b: "y", ref: null};
-	var k = {c: "z", ref: null};
+	const i = {a: "x", ref: null};
+	const j = {b: "y", ref: null};
+	const k = {c: "z", ref: null};
 	i.ref = j;
 	j.ref = k;
 	k.ref = i;
@@ -398,19 +396,19 @@ test("Test using %j, %o, %O, and %J syntax", () => {
 	expect(typeof log.toString() === "string").toBe(true);
 	expect(log).toBeDefined();
 
-	let s = log.info("Test with %j replacement: [%j]", obj);
+	let s = log.info("Test with %%j replacement: [%j]", obj);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 
-	s = log.info("Test with %J replacement: [%J]", obj);
+	s = log.info("Test with %%J replacement: [%J]", obj);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 
-	s = log.info("Test with %O replacement: [%O]", obj);
+	s = log.info("Test with %%O replacement: [%O]", obj);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 
-	s = log.info("Test with %o replacement: [%o]", obj);
+	s = log.info("Test with %%o replacement: [%o]", obj);
 	expect(typeof s === "string").toBe(true);
 	expect(/\[.*INFO \S*\].*/.test(s)).toBe(true);
 });
@@ -462,4 +460,42 @@ test("Test info message without creating files (console only)", () => {
 	expect(fs.existsSync(join(logdir, "messages.log"))).toBe(false);
 	expect(fs.existsSync(join(logdir, "events.log"))).toBe(false);
 	expect(s).toMatch(r);
+});
+
+test("Test info message that contains a function reference", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		debug: true,
+		directory: logdir,
+		namespace: uuid.v4(),
+		nsWidth: 7,
+		useConsoleDebug: true
+	});
+
+	expect(log).toBeDefined();
+
+	const fn = () => null;
+	const s = log.debug("debug message with function: [%O]", fn);
+
+	expect(s).toBeDefined();
+	expect(typeof s === "string").toBe(true);
+	expect(/\[.*DEBUG\S*\].*/.test(s)).toBe(true);
+	expect(s).toContain("function fn(){return null}");
+	expect(fs.existsSync(logdir)).toBe(true);
+	expect(fs.existsSync(join(logdir, "messages.log"))).toBe(true);
+	expect(fs.existsSync(join(logdir, "events.log"))).toBe(true);
+});
+
+test("Test bad variable parameters sent to logging function", () => {
+	const fixture = new Fixture();
+	const logdir = join(fixture.dir, "logs");
+	const log = logger.instance({
+		debug: true,
+		directory: logdir
+	});
+
+	expect(() => {
+		log.debug("Test with bad replacement: [%j]");
+	}).toThrow();
 });

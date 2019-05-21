@@ -1,9 +1,8 @@
-"use strict";
-
 import autobind from "autobind-decorator";
 import * as fs from "fs-extra";
 import {sprintf} from "sprintf-js";
 import {join} from "util.join";
+import {matches} from "util.matches";
 import {timestamp as ts} from "util.timestamp";
 import * as uuid from "uuid";
 
@@ -151,6 +150,32 @@ export class Logger {
 	}
 
 	/**
+	 * Takes the input message string and searches for argument parameters.
+	 * It then compares it to the argument count.  If they do not match,
+	 * then an exception is thrown.  This is used to validate input into
+	 * the logger and prevent issues around mismatched argument parameters.
+	 * If a mismathch is found, then an exception is thrown.
+	 * @param str {string} - the input message to the logger.
+	 * @param args {any[]} - the possible dynamic input parameters passed
+	 * to the log message.
+	 */
+	private checkParamCount(str: string, args: any[]) {
+		if (str) {
+			// This regex will match %{alphanum}, but ignore %%{alphanum}
+			// The %% is used in a string to ignore the % as a place val
+			const totalMatches = matches(str, /(?<!%)%{1}[\w\.+-]+(?!%)/g);
+
+			if (totalMatches.length !== args.length) {
+				throw new Error(
+					`Invalid number of log message parameters (${
+						totalMatches.length
+					}/${args.length}) "${str}"`
+				);
+			}
+		}
+	}
+
+	/**
 	 * Allows the user to override the default configuration for the simple logger.
 	 * See the LoggingConfig interface for valid options.
 	 * @param config {LoggingConfig} optional argumets to override the default logger
@@ -193,13 +218,19 @@ export class Logger {
 
 	/**
 	 * Convenience method for processing and sanitizing the arguments passed into
-	 * each of the logign functions
-	 * @param inp {any} a reference to a java arguments object
+	 * each of the loging functions
+	 * @param inp {any} a reference to a javascript arguments object
 	 */
 	private getArgs(inp: any): any {
 		return {
 			str: inp.length >= 1 ? inp[0] : "",
-			arr: inp.length > 1 ? [...inp].slice(1) : []
+			arr: (inp.length > 1 ? [...inp].slice(1) : []).map((it) => {
+				if (typeof it !== "function") {
+					return it;
+				} else {
+					return it.toString();
+				}
+			})
 		};
 	}
 
@@ -210,7 +241,9 @@ export class Logger {
 	 *     [LEVEL] @ {timestamp}: {message}
 	 *
 	 * This function checks to see if the enviornment has been configured.  If it has
-	 * not, then it uses the default options.
+	 * not, then it uses the default options.  The function will check the input
+	 * message and count the variable arguments to the message.  If they do not
+	 * match, then an error exception will be thrown from the logger.
 	 *
 	 * @param message {string} the string passed to output (sprintf)) functions.
 	 * @param level {Levels} the logging level requested.
@@ -221,6 +254,8 @@ export class Logger {
 		if (!this.config.enabled) {
 			return "";
 		}
+
+		this.checkParamCount(message, args);
 
 		const nsWidth = this.config.nsWidth;
 		let timestamp = ts({dateFormat: this.config.dateFormat});
