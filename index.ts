@@ -167,9 +167,7 @@ export class Logger {
 
 			if (totalMatches.length !== args.length) {
 				throw new Error(
-					`Invalid number of log message parameters (${
-						totalMatches.length
-					}/${args.length}) "${str}"`
+					`Invalid number of log message parameters (${totalMatches.length}/${args.length}) "${str}"`
 				);
 			}
 		}
